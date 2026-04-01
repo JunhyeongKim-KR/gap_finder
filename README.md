@@ -28,7 +28,9 @@
 
 ## 시각화
 
-- [viz/index.html](viz/index.html) — 전체 시스템 대시보드
+> **[시스템 대시보드 (Live)](https://junhyeongkim-kr.github.io/gap_finder/viz/index.html)** — 브라우저에서 바로 확인
+
+- [viz/index.html](viz/index.html) — 소스 파일
 
 ## 프로젝트 구조 (예정)
 
