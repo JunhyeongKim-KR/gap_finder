@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GapFinder — 워크플로우 실증 (삼성전자)</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff;
+    --green: #3fb950; --yellow: #d29922; --red: #f85149;
+    --purple: #bc8cff; --orange: #f0883e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+  .header { text-align: center; padding: 2rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+  .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--muted); }
+  .back-link { display: inline-block; margin-bottom: 1rem; color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+  .back-link:hover { text-decoration: underline; }
+
+  /* Pipeline */
+  .pipeline { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 2rem 0; }
+  .step { width: 100%; max-width: 800px; position: relative; }
+  .step-card { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 0 auto; transition: all 0.3s; cursor: pointer; }
+  .step-card:hover { border-color: var(--accent); }
+  .step-card.active { border-color: var(--accent); box-shadow: 0 0 20px rgba(88,166,255,0.15); }
+  .step-card.done { border-color: var(--green); }
+  .step-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+  .step-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+  .step-num.done { background: var(--green); color: #000; }
+  .step-num.active { background: var(--accent); color: #000; }
+  .step-num.pending { background: var(--border); color: var(--muted); }
+  .step-title { font-size: 1.1rem; font-weight: 600; }
+  .step-desc { color: var(--muted); font-size: 0.9rem; margin-left: 52px; }
+  .step-detail { display: none; margin-top: 1rem; margin-left: 52px; padding: 1rem; background: rgba(88,166,255,0.05); border-radius: 8px; border: 1px solid var(--border); }
+  .step-detail.show { display: block; }
+  .arrow { width: 2px; height: 28px; background: var(--border); margin: 0 auto; }
+  .arrow.done { background: var(--green); }
+
+  /* Data display */
+  .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  @media (max-width: 768px) { .data-grid { grid-template-columns: 1fr; } }
+  .data-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .data-card h4 { color: var(--accent); margin-bottom: 0.5rem; font-size: 0.95rem; }
+  .data-card pre { font-size: 0.8rem; color: var(--muted); overflow-x: auto; white-space: pre-wrap; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.5rem 0; }
+  th { background: rgba(88,166,255,0.08); color: var(--accent); text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--border); }
+  td { padding: 0.5rem; border-bottom: 1px solid var(--border); color: var(--muted); }
+
+  .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+  .tag-green { background: rgba(63,185,80,0.15); color: var(--green); }
+  .tag-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .tag-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .tag-red { background: rgba(248,81,73,0.15); color: var(--red); }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .stat-box .num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+  .stat-box .label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+  .verdict-box { background: rgba(63,185,80,0.08); border: 2px solid var(--green); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; text-align: center; }
+  .verdict-box h3 { color: var(--green); font-size: 1.3rem; margin-bottom: 0.5rem; }
+
+  .code-block { background: #0d1117; border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem; font-family: 'SF Mono', Monaco, monospace; font-size: 0.8rem; color: var(--green); overflow-x: auto; margin: 0.5rem 0; }
+
+  .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+  @media (max-width: 768px) { .scenario-grid { grid-template-columns: 1fr; } }
+  .scenario { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+  .scenario .price { font-size: 1.4rem; font-weight: 700; margin: 0.5rem 0; }
+  .scenario .pct { font-size: 0.9rem; font-weight: 600; }
+
+  .sensitivity-bar { display: flex; align-items: center; gap: 0.8rem; margin: 0.4rem 0; }
+  .sensitivity-label { width: 100px; font-size: 0.85rem; color: var(--muted); }
+  .sensitivity-fill { height: 20px; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; font-size: 0.7rem; font-weight: 600; color: #000; }
+
+  .footer { text-align: center; padding: 2rem 0; border-top: 1px solid var(--border); margin-top: 3rem; color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a href="index.html" class="back-link">&larr; 시스템 대시보드로 돌아가기</a>
+
+<div class="header">
+  <h1><span>Gap</span>Finder 워크플로우 실증</h1>
+  <p>삼성전자(005930.KS)를 대상으로 전체 파이프라인을 1회 실행한 결과</p>
+</div>
+
+<!-- Summary Stats -->
+<div class="stat-row">
+  <div class="stat-box"><div class="num">5</div><div class="label">생성된 테이블</div></div>
+  <div class="stat-box"><div class="num">60+</div><div class="label">stock_master 필드</div></div>
+  <div class="stat-box"><div class="num">4</div><div class="label">분기 재무 데이터</div></div>
+  <div class="stat-box"><div class="num">5</div><div class="label">일별 시세 데이터</div></div>
+  <div class="stat-box"><div class="num">1</div><div class="label">생성된 분석 글</div></div>
+</div>
+
+<!-- Pipeline Steps -->
+<h2 style="color:var(--accent); text-align:center; margin: 2rem 0 1rem;">실행 파이프라인</h2>
+
+<div class="pipeline">
+
+  <!-- Step 1: DB Init -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('d1')">
+      <div class="step-header">
+        <div class="step-num done">1</div>
+        <div class="step-title">SQLite DB 초기화</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">docs/04 스키마 기반 5개 테이블 생성 &rarr; db/gapfinder.db</div>
+      <div class="step-detail" id="d1">
+        <div class="code-block">$ python3 scripts/init_db.py</div>
+        <table>
+          <thead><tr><th>테이블</th><th>용도</th><th>PK</th></tr></thead>
+          <tbody>
+            <tr><td>stock_master</td><td>종목 마스터 (60+ 필드)</td><td>ticker</td></tr>
+            <tr><td>financials</td><td>분기별 재무제표</td><td>ticker + fiscal_period</td></tr>
+            <tr><td>price_daily</td><td>일별 시세</td><td>ticker + date</td></tr>
+            <tr><td>macro_events</td><td>매크로 이벤트</td><td>event_id</td></tr>
+            <tr><td>content_log</td><td>발행 이력</td><td>id (auto)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 2: Seed Data -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('d2')">
+      <div class="step-header">
+        <div class="step-num done">2</div>
+        <div class="step-title">종목 데이터 입력 — 삼성전자</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">stock_master + financials(4Q) + price_daily(5일) 입력</div>
+      <div class="step-detail" id="d2">
+        <div class="data-grid">
+          <div class="data-card">
+            <h4>기본 정보</h4>
+            <table>
+              <tr><td>티커</td><td>005930.KS</td></tr>
+              <tr><td>시장</td><td>KOSPI</td></tr>
+              <tr><td>섹터</td><td>반도체</td></tr>
+              <tr><td>시총</td><td>약 328조원</td></tr>
+            </table>
+          </div>
+          <div class="data-card">
+            <h4>매출 구성</h4>
+            <div class="sensitivity-bar"><span class="sensitivity-label">메모리반도체</span><div class="sensitivity-fill" style="width:45%; background:var(--accent);">45%</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">MX(모바일)</span><div class="sensitivity-fill" style="width:25%; background:var(--purple);">25%</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">파운드리</span><div class="sensitivity-fill" style="width:15%; background:var(--yellow);">15%</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">디스플레이</span><div class="sensitivity-fill" style="width:10%; background:var(--orange);">10%</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">기타</span><div class="sensitivity-fill" style="width:5%; background:var(--muted);">5%</div></div>
+          </div>
+          <div class="data-card">
+            <h4>투자 분석</h4>
+            <table>
+              <tr><td>유형</td><td><span class="tag tag-blue">업황저점</span></td></tr>
+              <tr><td>핵심 논거</td><td>HBM3E/HBM4 양산 본격화, 메모리 ASP 상승</td></tr>
+              <tr><td>역발상 포인트</td><td>시장은 다운사이클 반영 &rarr; 실제 HBM 수요는 구조적</td></tr>
+            </table>
+          </div>
+          <div class="data-card">
+            <h4>해자(Moat)</h4>
+            <table>
+              <tr><td>규모의 경제</td><td>글로벌 메모리 40%+ 점유</td></tr>
+              <tr><td>기술력</td><td>미세공정, HBM 적층</td></tr>
+              <tr><td>수직계열화</td><td>소재~제조 원가 경쟁력</td></tr>
+              <tr><td>CAPEX 장벽</td><td>수조원 투자 필요</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 3: Financials -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('d3')">
+      <div class="step-header">
+        <div class="step-num done">3</div>
+        <div class="step-title">재무 데이터 확인</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">2025년 4개 분기 재무제표 + 최근 5일 시세</div>
+      <div class="step-detail" id="d3">
+        <h4 style="color:var(--accent); margin-bottom:0.5rem;">분기별 재무 (조원)</h4>
+        <table>
+          <thead><tr><th>분기</th><th>매출</th><th>영업이익</th><th>순이익</th><th>EPS</th><th>ROE</th><th>PER</th><th>PBR</th></tr></thead>
+          <tbody>
+            <tr><td>2025Q1</td><td>77.0</td><td>6.6</td><td>5.1</td><td>340</td><td>5.5%</td><td>16.0</td><td>1.20</td></tr>
+            <tr><td>2025Q2</td><td>74.0</td><td>10.4</td><td>8.0</td><td>530</td><td>7.8%</td><td>12.5</td><td>1.15</td></tr>
+            <tr style="background:rgba(63,185,80,0.05);"><td><strong>2025Q3</strong></td><td><strong>79.0</strong></td><td><strong>12.3</strong></td><td><strong>9.8</strong></td><td><strong>650</strong></td><td><strong>9.0%</strong></td><td><strong>10.8</strong></td><td><strong>1.10</strong></td></tr>
+            <tr><td>2025Q4</td><td>75.0</td><td>8.0</td><td>6.5</td><td>430</td><td>7.2%</td><td>13.0</td><td>1.08</td></tr>
+          </tbody>
+        </table>
+        <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">Q3 피크: HBM3E 양산 본격화 + 서버 DRAM 강세</p>
+
+        <h4 style="color:var(--accent); margin: 1rem 0 0.5rem;">최근 시세</h4>
+        <table>
+          <thead><tr><th>일자</th><th>시가</th><th>고가</th><th>저가</th><th>종가</th><th>거래량</th></tr></thead>
+          <tbody>
+            <tr><td>03.31</td><td>54,800</td><td>55,300</td><td>54,200</td><td><strong>55,000</strong></td><td>14.0M</td></tr>
+            <tr><td>03.28</td><td>55,500</td><td>56,000</td><td>54,500</td><td>54,800</td><td>18.0M</td></tr>
+            <tr><td>03.27</td><td>55,100</td><td>55,800</td><td>54,800</td><td>55,500</td><td>16.0M</td></tr>
+            <tr><td>03.26</td><td>54,800</td><td>55,500</td><td>54,300</td><td>55,100</td><td>14.5M</td></tr>
+            <tr><td>03.25</td><td>54,500</td><td>55,200</td><td>54,000</td><td>54,800</td><td>15.0M</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 4: Valuation -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('d4')">
+      <div class="step-header">
+        <div class="step-num done">4</div>
+        <div class="step-title">밸류에이션 분석</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">PER/PBR 밴드 위치 확인 + 목표주가 3-시나리오 산출</div>
+      <div class="step-detail" id="d4">
+        <div class="data-grid">
+          <div class="data-card">
+            <h4>PER 밴드 (5년)</h4>
+            <div class="sensitivity-bar"><span class="sensitivity-label">현재 11.5x</span><div class="sensitivity-fill" style="width:35%; background:var(--yellow);">하위 35%</div></div>
+            <p style="color:var(--muted); font-size:0.8rem; margin-top:0.3rem;">범위: 8.0x ~ 18.0x</p>
+          </div>
+          <div class="data-card">
+            <h4>PBR 밴드 (5년)</h4>
+            <div class="sensitivity-bar"><span class="sensitivity-label">현재 1.05x</span><div class="sensitivity-fill" style="width:17%; background:var(--red);">하위 17%</div></div>
+            <p style="color:var(--muted); font-size:0.8rem; margin-top:0.3rem;">범위: 0.9x ~ 1.8x</p>
+          </div>
+        </div>
+
+        <h4 style="color:var(--accent); margin: 1rem 0 0.5rem;">목표주가 시나리오</h4>
+        <div class="scenario-grid">
+          <div class="scenario" style="border:1px solid var(--green);">
+            <div style="color:var(--green); font-weight:600;">낙관</div>
+            <div class="price" style="color:var(--green);">80,000원</div>
+            <div class="pct" style="color:var(--green);">+45.5%</div>
+            <p style="color:var(--muted); font-size:0.75rem; margin-top:0.3rem;">HBM4 조기양산 + DRAM +30%</p>
+          </div>
+          <div class="scenario" style="border:2px solid var(--accent);">
+            <div style="color:var(--accent); font-weight:600;">기본</div>
+            <div class="price" style="color:var(--accent);">70,000원</div>
+            <div class="pct" style="color:var(--accent);">+27.3%</div>
+            <p style="color:var(--muted); font-size:0.75rem; margin-top:0.3rem;">HBM3E 정상양산 + DRAM +15%</p>
+          </div>
+          <div class="scenario" style="border:1px solid var(--red);">
+            <div style="color:var(--red); font-weight:600;">비관</div>
+            <div class="price" style="color:var(--red);">50,000원</div>
+            <div class="pct" style="color:var(--red);">-9.1%</div>
+            <p style="color:var(--muted); font-size:0.75rem; margin-top:0.3rem;">HBM 수율지연 + DRAM 보합</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 5: Content Generation -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('d5')">
+      <div class="step-header">
+        <div class="step-num done">5</div>
+        <div class="step-title">콘텐츠 생성 (LLM Agent)</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">DB 데이터 + 글 템플릿 &rarr; Claude Agent가 분석 글 초안 생성</div>
+      <div class="step-detail" id="d5">
+        <div class="code-block">DB 읽기 &rarr; 시스템 프롬프트(docs/07 템플릿) &rarr; Claude Agent &rarr; output/005930_삼성전자_20260401.md</div>
+        <div class="data-card" style="margin-top:1rem;">
+          <h4>생성된 글 구조</h4>
+          <table>
+            <tr><td>1</td><td>초보 3줄 요약</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>2</td><td>한 줄 결론</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>3</td><td>기업 개요</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>4</td><td>비즈니스모델 분석</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>5</td><td>산업 및 경쟁구도</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>6</td><td>실적 해석 포인트</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>7</td><td>현재 주가 판단</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>8</td><td>목표주가 (3-시나리오)</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>9</td><td>투자 철회 조건</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>10</td><td>시나리오 분석</td><td><span class="tag tag-green">생성</span></td></tr>
+            <tr><td>11</td><td>최종 판단 + 면책</td><td><span class="tag tag-green">생성</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 6: Result -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('d6')">
+      <div class="step-header">
+        <div class="step-num done">6</div>
+        <div class="step-title">최종 판단 결과</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">삼성전자(005930.KS) Tier 1 분석 글 — 판단: BUY</div>
+      <div class="step-detail show" id="d6">
+        <div class="verdict-box">
+          <h3>BUY &mdash; 확신도 MEDIUM</h3>
+          <p style="color:var(--muted);">보유기간: 6~12개월 | 기본 목표: 70,000원 (+27.3%)</p>
+        </div>
+
+        <div class="data-grid">
+          <div class="data-card">
+            <h4>핵심 논거</h4>
+            <ul style="list-style:none; padding:0;">
+              <li style="padding:0.3rem 0; color:var(--muted); border-bottom:1px solid var(--border);">PBR 1.05x = 5년 하위 17% &rarr; 역사적 매수 구간</li>
+              <li style="padding:0.3rem 0; color:var(--muted); border-bottom:1px solid var(--border);">HBM3E 양산 정상화, 엔비디아 공급 다변화 진행</li>
+              <li style="padding:0.3rem 0; color:var(--muted);">파운드리 수율 불확실성 잔존 &rarr; MEDIUM 확신</li>
+            </ul>
+          </div>
+          <div class="data-card">
+            <h4>매크로 민감도</h4>
+            <div class="sensitivity-bar"><span class="sensitivity-label">반도체 업황</span><div class="sensitivity-fill" style="width:90%; background:var(--green);">HIGH +</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">AI 수요</span><div class="sensitivity-fill" style="width:90%; background:var(--green);">HIGH +</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">환율(원/달러)</span><div class="sensitivity-fill" style="width:90%; background:var(--red);">HIGH -</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">금리</span><div class="sensitivity-fill" style="width:60%; background:var(--yellow);">MID -</div></div>
+          </div>
+          <div class="data-card">
+            <h4>철회 조건</h4>
+            <ul style="list-style:none; padding:0;">
+              <li style="padding:0.3rem 0; color:var(--red); border-bottom:1px solid var(--border);">HBM 수율 2분기 연속 미달</li>
+              <li style="padding:0.3rem 0; color:var(--red); border-bottom:1px solid var(--border);">DRAM 고정가 3분기 연속 하락</li>
+              <li style="padding:0.3rem 0; color:var(--red);">파운드리 대형 고객 이탈</li>
+            </ul>
+            <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">참고 손절가: 48,000원</p>
+          </div>
+          <div class="data-card">
+            <h4>리스크</h4>
+            <table>
+              <tr><td>중국 반도체</td><td><span class="tag tag-yellow">MID</span></td></tr>
+              <tr><td>파운드리 수율</td><td><span class="tag tag-red">HIGH</span></td></tr>
+              <tr><td>HBM 경쟁</td><td><span class="tag tag-yellow">MID</span></td></tr>
+              <tr><td>글로벌 경기</td><td><span class="tag tag-red">HIGH</span></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- File Structure -->
+<h2 style="color:var(--accent); margin: 2rem 0 1rem;">생성된 파일 구조</h2>
+<div class="data-card" style="max-width:600px;">
+  <pre style="color:var(--green);">gap_finder/
+├── db/
+│   └── gapfinder.db          <span style="color:var(--muted);"># SQLite DB (5 tables)</span>
+├── scripts/
+│   └── init_db.py            <span style="color:var(--muted);"># DB 초기화 + 샘플 입력</span>
+├── output/
+│   └── 005930_삼성전자_20260401.md  <span style="color:var(--muted);"># 생성된 분석 글</span>
+├── docs/                      <span style="color:var(--muted);"># 전략 문서 11종</span>
+└── viz/
+    ├── index.html             <span style="color:var(--muted);"># 시스템 대시보드</span>
+    └── example_workflow.html  <span style="color:var(--muted);"># 이 페이지</span></pre>
+</div>
+
+<div class="footer">
+  <p>GapFinder 워크플로우 실증 | 삼성전자(005930.KS) | 2026.04.01</p>
+  <p style="margin-top:0.3rem;">이 문서는 시스템 검증용이며, 투자 권유가 아닙니다.</p>
+</div>
+
+</div>
+
+<script>
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+}
+</script>
+</body>
+</html>
