@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GapFinder — 시스템 대시보드</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff;
+    --green: #3fb950; --yellow: #d29922; --red: #f85149;
+    --purple: #bc8cff; --orange: #f0883e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+  /* Header */
+  .header { text-align: center; padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+  .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--muted); font-size: 1.1rem; }
+
+  /* Navigation tabs */
+  .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center; }
+  .tab { padding: 0.6rem 1.2rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--muted); cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+  .tab:hover { border-color: var(--accent); color: var(--text); }
+  .tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+  .card h3 { color: var(--accent); margin-bottom: 1rem; font-size: 1.1rem; }
+  .card ul { list-style: none; padding: 0; }
+  .card li { padding: 0.4rem 0; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 0.9rem; }
+  .card li:last-child { border-bottom: none; }
+  .card li strong { color: var(--text); }
+
+  /* Workflow diagram */
+  .workflow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .wf-node { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.2rem 2rem; min-width: 340px; text-align: center; position: relative; }
+  .wf-node h4 { color: var(--accent); margin-bottom: 0.3rem; }
+  .wf-node p { color: var(--muted); font-size: 0.85rem; }
+  .wf-node.human { border-color: var(--yellow); background: rgba(210, 153, 34, 0.08); }
+  .wf-node.human h4 { color: var(--yellow); }
+  .wf-arrow { width: 2px; height: 32px; background: var(--border); }
+  .wf-split { display: flex; gap: 1rem; align-items: flex-start; }
+  .wf-split .wf-node { min-width: 160px; font-size: 0.85rem; }
+  .wf-split-arrows { display: flex; gap: 1rem; }
+  .wf-split-arrows > div { display: flex; flex-direction: column; align-items: center; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th { background: var(--surface); color: var(--accent); text-align: left; padding: 0.8rem; border-bottom: 2px solid var(--border); }
+  td { padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--border); color: var(--muted); }
+  tr:hover td { background: rgba(88, 166, 255, 0.04); }
+
+  /* Tags */
+  .tag { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin: 0.15rem; }
+  .tag-green { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+  .tag-yellow { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+  .tag-red { background: rgba(248, 81, 73, 0.15); color: var(--red); }
+  .tag-blue { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+  .tag-purple { background: rgba(188, 140, 255, 0.15); color: var(--purple); }
+
+  /* Progress bars */
+  .progress-row { display: flex; align-items: center; gap: 1rem; margin: 0.6rem 0; }
+  .progress-label { width: 120px; font-size: 0.85rem; color: var(--muted); }
+  .progress-bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .progress-value { width: 50px; text-align: right; font-size: 0.85rem; font-weight: 600; }
+
+  /* Stat boxes */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; text-align: center; }
+  .stat-box .num { font-size: 2rem; font-weight: 700; color: var(--accent); }
+  .stat-box .label { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
+  /* Comparison */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .compare-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+  .compare-col h3 { margin-bottom: 1rem; }
+  .compare-col.pdf h3 { color: var(--orange); }
+  .compare-col.system h3 { color: var(--accent); }
+  .compare-col li { padding: 0.4rem 0; color: var(--muted); font-size: 0.88rem; }
+
+  /* P&L */
+  .pnl-chart { display: flex; align-items: flex-end; gap: 1.5rem; height: 250px; padding: 1rem 0; justify-content: center; }
+  .pnl-bar-group { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+  .pnl-bar { width: 60px; border-radius: 6px 6px 0 0; transition: height 0.5s; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 0.3rem; font-size: 0.7rem; font-weight: 600; }
+  .pnl-label { font-size: 0.75rem; color: var(--muted); text-align: center; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .wf-split { flex-direction: column; align-items: center; }
+    .header h1 { font-size: 1.8rem; }
+  }
+
+  /* Token chart */
+  .token-chart { display: flex; gap: 2rem; align-items: center; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+  .donut-container { position: relative; width: 180px; height: 180px; }
+  .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+  .donut-center .num { font-size: 1.4rem; font-weight: 700; color: var(--text); }
+  .donut-center .label { font-size: 0.7rem; color: var(--muted); }
+  .token-legend { display: flex; flex-direction: column; gap: 0.5rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <h1><span>Gap</span>Finder</h1>
+  <p>역발상 투자 리서치 콘텐츠 시스템 — 시장 기대의 괴리를 찾아내는 반자동 운영 체계</p>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="showSection('overview')">시스템 개요</div>
+  <div class="tab" onclick="showSection('workflow')">워크플로우</div>
+  <div class="tab" onclick="showSection('database')">DB 설계</div>
+  <div class="tab" onclick="showSection('tokens')">토큰 & 비용</div>
+  <div class="tab" onclick="showSection('platform')">플랫폼 전략</div>
+  <div class="tab" onclick="showSection('roadmap')">로드맵</div>
+  <div class="tab" onclick="showSection('comparison')">PDF 비교</div>
+</div>
+
+<!-- Section: Overview -->
+<div id="overview" class="section active">
+  <div class="stat-row">
+    <div class="stat-box"><div class="num">30</div><div class="label">초기 커버리지 종목</div></div>
+    <div class="stat-box"><div class="num">10건/일</div><div class="label">목표 발행량</div></div>
+    <div class="stat-box"><div class="num">~$3/월</div><div class="label">LLM 비용</div></div>
+    <div class="stat-box"><div class="num">~3MB</div><div class="label">1년 후 DB 크기</div></div>
+    <div class="stat-box"><div class="num">2곳</div><div class="label">사람 개입 지점</div></div>
+  </div>
+
+  <h2 style="margin-bottom:1.5rem; color:var(--accent);">투자 철학</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3>핵심 질문</h3>
+      <p style="color:var(--text); font-size:1.1rem; font-weight:600; margin-bottom:0.8rem;">"좋은 회사인가?" 가 아니라<br>"현재 시장 기대가 과도한가?"</p>
+      <ul>
+        <li>역발상(Contrarian) 기반 중기 매매</li>
+        <li>3~12개월 재평가 가능성 중심</li>
+        <li>시장의 비관/낙관 과도 구간 포착</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>투자 아이디어 7가지 유형</h3>
+      <div>
+        <span class="tag tag-red">규제과민반응</span>
+        <span class="tag tag-yellow">일회성실적쇼크</span>
+        <span class="tag tag-blue">업황저점</span>
+        <span class="tag tag-purple">컨센서스역이용</span>
+        <span class="tag tag-green">낙폭과대</span>
+        <span class="tag tag-yellow">구조적경쟁우위오판</span>
+        <span class="tag tag-red">공급축소소외섹터</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>목표주가 방법론 4유형</h3>
+      <ul>
+        <li><strong>컨센서스 참고형</strong> — 애널리스트 평균 TP 기준 가중</li>
+        <li><strong>절대가치평가형</strong> — FCF / EV/EBITDA 직접 산정</li>
+        <li><strong>상대가치평가형</strong> — 섹터 피어 멀티플 비교</li>
+        <li><strong>이벤트 리버전형</strong> — 이슈 해소 시 복귀 기준가</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>3-Tier 발행 구조</h3>
+      <ul>
+        <li><strong>Tier 1</strong> — 1~2건/일, 신규 심화 분석 (장문) <span class="tag tag-red">사람 주도</span></li>
+        <li><strong>Tier 2</strong> — 3~4건/일, 기존 종목 업데이트 <span class="tag tag-yellow">반자동</span></li>
+        <li><strong>Tier 3</strong> — 4~6건/일, 플랫폼 재가공 요약본 <span class="tag tag-green">자동화↑</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">핵심 원칙 5조</h2>
+  <div class="card" style="max-width:800px;">
+    <table>
+      <tr><td style="width:40px; color:var(--accent); font-weight:700;">1</td><td>신규 장문 남발 금지 — 기존 DB 재활용 + 업데이트 반복이 수익 구조</td></tr>
+      <tr><td style="color:var(--accent); font-weight:700;">2</td><td>모든 글은 DB에서 출발 — 글 먼저 쓰고 정리하는 방식 금지</td></tr>
+      <tr><td style="color:var(--accent); font-weight:700;">3</td><td>자동화는 재가공부터 — 목표주가 산정과 최종 결론은 자동화 금지</td></tr>
+      <tr><td style="color:var(--accent); font-weight:700;">4</td><td>사람은 판단만 한다 — 데이터 정리·초안 생성·재가공은 기계</td></tr>
+      <tr><td style="color:var(--accent); font-weight:700;">5</td><td>유료는 병목에만 쓴다 — '편해 보여서' 결제 금지</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Section: Workflow -->
+<div id="workflow" class="section">
+  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">데이터 파이프라인 워크플로우</h2>
+
+  <div class="workflow">
+    <div class="wf-node">
+      <h4>DAILY TRIGGER (cron 07:00 / 18:00)</h4>
+      <p>매일 2회 자동 실행</p>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <div style="display:flex; gap:2rem; flex-wrap:wrap; justify-content:center;">
+      <div class="wf-node">
+        <h4>① 데이터 수집</h4>
+        <p>KRX 시세 · 네이버 컨센서스<br>Yahoo Finance · DART 공시</p>
+      </div>
+      <div class="wf-node">
+        <h4>② 매크로 스캔</h4>
+        <p>FRED 금리 · 한은 환율<br>유가/원자재 · Google News</p>
+      </div>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <div class="wf-node">
+      <h4>③ SQLite DB 업데이트</h4>
+      <p>raw/ → 정제 → financials, price_daily 갱신<br>매크로 이벤트 감지 → macro_events 등록</p>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <div class="wf-node">
+      <h4>④ 업데이트 필요 종목 판별</h4>
+      <p>sensitivity=HIGH → NEEDS_UPDATE<br>실적 발표 ±3일 → 플래그<br>30일 미업데이트 → 정기 점검</p>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <div class="wf-node human">
+      <h4>👤 사람 확인 #1</h4>
+      <p>업데이트 종목 승인 / 우선순위 조정<br>텔레그램 알림 → 승인</p>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+      <div class="wf-node" style="border-color:var(--red);">
+        <h4 style="color:var(--red);">Tier 1</h4>
+        <p>신규 심화<br>Sonnet</p>
+      </div>
+      <div class="wf-node" style="border-color:var(--yellow);">
+        <h4 style="color:var(--yellow);">Tier 2</h4>
+        <p>업데이트<br>Haiku</p>
+      </div>
+      <div class="wf-node" style="border-color:var(--green);">
+        <h4 style="color:var(--green);">Tier 3</h4>
+        <p>재가공<br>Haiku</p>
+      </div>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <div class="wf-node">
+      <h4>⑤ 콘텐츠 생성 (LLM Agent)</h4>
+      <p>DB → 시스템 프롬프트 + 템플릿 → 글 초안 → output/</p>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <div class="wf-node human">
+      <h4>👤 사람 확인 #2</h4>
+      <p>Tier 1/2만: 숫자 정확성, 목표주가, 철회조건, 결론<br>Tier 3은 자동 통과</p>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <div class="wf-node">
+      <h4>⑥ 멀티플랫폼 발행 (n8n)</h4>
+      <p>원문 → 티스토리 · 축약본 → 네이버 · 1줄 → X<br>content_log 자동 업데이트</p>
+    </div>
+  </div>
+
+  <h2 style="margin:3rem 0 1.5rem; color:var(--accent);">자동화 경계선</h2>
+  <div class="compare-grid">
+    <div class="compare-col" style="border-color:var(--green);">
+      <h3 style="color:var(--green);">✅ 자동화 OK</h3>
+      <ul>
+        <li>제목 초안 생성 (LLM 3안)</li>
+        <li>초보자 3줄 요약 자동 변환</li>
+        <li>티스토리 → 네이버 문안 분리</li>
+        <li>DB 발행 상태 자동 업데이트</li>
+        <li>매크로 이슈 발생 시 종목 자동 태깅</li>
+        <li>시세/재무 데이터 수집</li>
+      </ul>
+    </div>
+    <div class="compare-col" style="border-color:var(--red);">
+      <h3 style="color:var(--red);">🚫 자동화 금지</h3>
+      <ul>
+        <li>숫자 출처 확인 및 적정성</li>
+        <li>목표주가 가정 적정성</li>
+        <li>투자 논리의 내적 일관성</li>
+        <li>최종 결론 문장</li>
+        <li>철회조건 정의</li>
+        <li>종목 선정 / 투자 가설 수립</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Section: Database -->
+<div id="database" class="section">
+  <h2 style="margin-bottom:1.5rem; color:var(--accent);">DB 아키텍처</h2>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="num">SQLite</div><div class="label">초기 엔진</div></div>
+    <div class="stat-box"><div class="num">5</div><div class="label">핵심 테이블</div></div>
+    <div class="stat-box"><div class="num">60+</div><div class="label">stock_master 필드</div></div>
+    <div class="stat-box"><div class="num">~800KB</div><div class="label">6개월 후 크기</div></div>
+    <div class="stat-box"><div class="num">~3MB</div><div class="label">1년 후 크기</div></div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>stock_master (종목 마스터)</h3>
+      <ul>
+        <li><strong>기본 정보</strong> — ticker, name, market, sector, market_cap</li>
+        <li><strong>비즈니스</strong> — summary, revenue_structure, moat, competitors</li>
+        <li><strong>투자 분석</strong> — thesis, thesis_type(7종), contrarian_angle, risks</li>
+        <li><strong>밸류에이션</strong> — framework(4종), PER/PBR, hist bands</li>
+        <li><strong>목표주가</strong> — bull/base/bear + assumptions</li>
+        <li><strong>판단</strong> — verdict, conviction, horizon, history</li>
+        <li><strong>매크로 연동</strong> — exposures tags, sensitivity map</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>financials (분기별 재무)</h3>
+      <ul>
+        <li>ticker, fiscal_period</li>
+        <li>revenue, operating_income, net_income</li>
+        <li>eps, bps, roe, debt_ratio</li>
+        <li>ocf, fcf, per, pbr, ev_ebitda</li>
+        <li>source, collected_at</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>price_daily (일별 시세)</h3>
+      <ul>
+        <li>ticker, date</li>
+        <li>open, high, low, close, volume</li>
+        <li>market_cap</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>macro_events (매크로 이벤트)</h3>
+      <ul>
+        <li>event_id, event_date, category</li>
+        <li>title, description</li>
+        <li>affected_tags, severity</li>
+        <li>action_taken</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>content_log (발행 이력)</h3>
+      <ul>
+        <li>ticker, content_type (Tier 1/2/3)</li>
+        <li>title, platform, url</li>
+        <li>published_at, needs_update</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">용량 예측 — 30종목 기준</h2>
+  <div class="card" style="max-width:700px;">
+    <div class="progress-row">
+      <span class="progress-label">stock_master</span>
+      <div class="progress-bar"><div class="progress-fill" style="width:11%; background:var(--accent);"></div></div>
+      <span class="progress-value" style="color:var(--accent);">90KB</span>
+    </div>
+    <div class="progress-row">
+      <span class="progress-label">financials</span>
+      <div class="progress-bar"><div class="progress-fill" style="width:15%; background:var(--green);"></div></div>
+      <span class="progress-value" style="color:var(--green);">120KB</span>
+    </div>
+    <div class="progress-row">
+      <span class="progress-label">price_daily</span>
+      <div class="progress-bar"><div class="progress-fill" style="width:56%; background:var(--yellow);"></div></div>
+      <span class="progress-value" style="color:var(--yellow);">450KB</span>
+    </div>
+    <div class="progress-row">
+      <span class="progress-label">macro_events</span>
+      <div class="progress-bar"><div class="progress-fill" style="width:6%; background:var(--purple);"></div></div>
+      <span class="progress-value" style="color:var(--purple);">50KB</span>
+    </div>
+    <div class="progress-row">
+      <span class="progress-label">content_log</span>
+      <div class="progress-bar"><div class="progress-fill" style="width:11%; background:var(--orange);"></div></div>
+      <span class="progress-value" style="color:var(--orange);">90KB</span>
+    </div>
+    <div class="progress-row" style="margin-top:1rem; border-top:1px solid var(--border); padding-top:0.8rem;">
+      <span class="progress-label" style="color:var(--text); font-weight:600;">총합</span>
+      <div class="progress-bar"><div class="progress-fill" style="width:100%; background:linear-gradient(90deg, var(--accent), var(--green));"></div></div>
+      <span class="progress-value" style="color:var(--text);">~800KB</span>
+    </div>
+  </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">데이터 소스</h2>
+  <div class="compare-grid">
+    <div class="compare-col">
+      <h3 style="color:var(--accent);">🇰🇷 한국주식</h3>
+      <ul>
+        <li><strong>DART OpenAPI</strong> — 재무제표, 공시 (무료, 일 10K건)</li>
+        <li><strong>KRX 정보데이터</strong> — 시세, 시총, PER/PBR</li>
+        <li><strong>네이버 금융</strong> — 컨센서스, 뉴스, 투자의견</li>
+        <li><strong>한국은행 ECOS</strong> — 금리, 환율 (매크로)</li>
+      </ul>
+    </div>
+    <div class="compare-col">
+      <h3 style="color:var(--accent);">🇺🇸 미국주식</h3>
+      <ul>
+        <li><strong>SEC EDGAR</strong> — 10-K, 10-Q 공시 원문</li>
+        <li><strong>Yahoo Finance</strong> — 시세, 재무, 컨센서스</li>
+        <li><strong>FRED</strong> — 금리, CPI, GDP (매크로)</li>
+        <li><strong>Finviz</strong> — 스크리너, 밸류에이션</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Section: Tokens & Cost -->
+<div id="tokens" class="section">
+  <h2 style="margin-bottom:1.5rem; color:var(--accent);">토큰 사용량 & 비용 추정</h2>
+
+  <h3 style="margin-bottom:1rem; color:var(--muted);">Tier별 토큰 사용량 (1편당)</h3>
+  <div class="card" style="max-width:900px; margin-bottom:2rem;">
+    <table>
+      <thead>
+        <tr><th>Tier</th><th>Input 토큰</th><th>Output 토큰</th><th>합계</th><th>일 발행</th><th>일 토큰</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-red">Tier 1 신규</span></td>
+          <td>~9,500</td><td>~4,000</td><td style="color:var(--text); font-weight:600;">13,500</td>
+          <td>1~2건</td><td>~27,000</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-yellow">Tier 2 업데이트</span></td>
+          <td>~5,000</td><td>~2,000</td><td style="color:var(--text); font-weight:600;">7,000</td>
+          <td>3~4건</td><td>~28,000</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">Tier 3 재가공</span></td>
+          <td>~4,000</td><td>~1,500</td><td style="color:var(--text); font-weight:600;">5,500</td>
+          <td>4~6건</td><td>~33,000</td>
+        </tr>
+        <tr style="border-top:2px solid var(--accent);">
+          <td style="color:var(--accent); font-weight:700;">일 합계</td>
+          <td></td><td></td><td></td>
+          <td style="color:var(--text); font-weight:600;">~10건</td>
+          <td style="color:var(--accent); font-weight:700;">~88,000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin-bottom:1rem; color:var(--muted);">Tier 1 글 작성 시 토큰 분해</h3>
+  <div style="display:flex; gap:3rem; align-items:center; justify-content:center; flex-wrap:wrap; margin-bottom:2rem;">
+    <div class="donut-container">
+      <svg viewBox="0 0 36 36" style="width:180px; height:180px; transform:rotate(-90deg);">
+        <!-- DB 읽기 3000/13500 = 22.2% -->
+        <circle cx="18" cy="18" r="14" fill="none" stroke="#58a6ff" stroke-width="3"
+          stroke-dasharray="22.2 77.8" stroke-dashoffset="0"/>
+        <!-- 매크로 1500/13500 = 11.1% -->
+        <circle cx="18" cy="18" r="14" fill="none" stroke="#3fb950" stroke-width="3"
+          stroke-dasharray="11.1 88.9" stroke-dashoffset="-22.2"/>
+        <!-- 경쟁사 2000/13500 = 14.8% -->
+        <circle cx="18" cy="18" r="14" fill="none" stroke="#d29922" stroke-width="3"
+          stroke-dasharray="14.8 85.2" stroke-dashoffset="-33.3"/>
+        <!-- 프롬프트 3000/13500 = 22.2% -->
+        <circle cx="18" cy="18" r="14" fill="none" stroke="#bc8cff" stroke-width="3"
+          stroke-dasharray="22.2 77.8" stroke-dashoffset="-48.1"/>
+        <!-- Output 4000/13500 = 29.6% -->
+        <circle cx="18" cy="18" r="14" fill="none" stroke="#f85149" stroke-width="3"
+          stroke-dasharray="29.6 70.4" stroke-dashoffset="-70.3"/>
+      </svg>
+      <div class="donut-center">
+        <div class="num">13.5K</div>
+        <div class="label">토큰/편</div>
+      </div>
+    </div>
+    <div class="token-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#58a6ff;"></div>DB 읽기 (3,000)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3fb950;"></div>매크로 컨텍스트 (1,500)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d29922;"></div>경쟁사 비교 (2,000)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#bc8cff;"></div>시스템 프롬프트 (3,000)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f85149;"></div>글 생성 Output (4,000)</div>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom:1rem; color:var(--muted);">모델별 월간 비용 비교</h3>
+  <div class="card" style="max-width:700px;">
+    <table>
+      <thead><tr><th>모델 조합</th><th>월 비용</th><th>연 비용</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>Sonnet(T1) + Haiku(T2/3)</td><td style="color:var(--green); font-weight:700;">~$2~3</td><td>~$30</td><td>추천 조합</td></tr>
+        <tr><td>Sonnet 전체</td><td>~$3.5</td><td>~$42</td><td></td></tr>
+        <tr><td>Haiku 전체</td><td>~$1.2</td><td>~$14</td><td>품질 타협</td></tr>
+        <tr><td>GPT-4o mini 전체</td><td>~$0.2</td><td>~$2.5</td><td>최저비용</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Section: Platform -->
+<div id="platform" class="section">
+  <h2 style="margin-bottom:1.5rem; color:var(--accent);">플랫폼 전략</h2>
+
+  <div class="card" style="margin-bottom:2rem;">
+    <table>
+      <thead>
+        <tr><th>기준</th><th>네이버 블로그</th><th>티스토리</th><th>브런치</th><th>서브스택</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>① 검색 유입력</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐</td><td>⭐</td></tr>
+        <tr><td>② 광고 수익화</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐</td><td>⭐⭐</td></tr>
+        <tr><td>③ 장문 적합성</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+        <tr><td>④ 자산 축적성</td><td>⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+        <tr><td>⑤ 자동화 연동</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+        <tr><td>⑥ 멀티포스팅</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-color:var(--accent);">
+      <h3>🏠 본진: 티스토리</h3>
+      <ul>
+        <li>구글 SEO + 애드센스 수익화</li>
+        <li>장문 분석글 홈베이스</li>
+        <li>자동화 연동 최적</li>
+        <li>개인 도메인 연결 가능</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--green);">
+      <h3>📡 보조 1: 네이버 블로그</h3>
+      <ul>
+        <li>한국 검색 유입 확보</li>
+        <li>동일 글 네이버 최적화 재가공</li>
+        <li>애드포스트 연동</li>
+        <li>초보자 눈높이 버전</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--purple);">
+      <h3>📬 보조 2: 서브스택 (6개월 후)</h3>
+      <ul>
+        <li>유료 전환 대비 구독자 풀</li>
+        <li>월간 요약 리포트 테스트</li>
+        <li>미국주식 영문 확장 가능</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Section: Roadmap -->
+<div id="roadmap" class="section">
+  <h2 style="margin-bottom:2rem; color:var(--accent);">단계별 로드맵</h2>
+
+  <div style="display:flex; flex-direction:column; gap:1.5rem;">
+    <div class="card" style="border-left:4px solid var(--muted);">
+      <h3 style="color:var(--muted);">Phase 0 — 설계 정리 (1~2주)</h3>
+      <p style="color:var(--muted); margin-bottom:0.8rem;">글 쓰기 전에 구조부터</p>
+      <ul>
+        <li>Google Sheets 4개 시트 완성</li>
+        <li>Notion 3개 페이지 세팅 (템플릿/원칙/SOP)</li>
+        <li>투자 아이디어 taxonomy 7가지 확정</li>
+        <li>초기 20~30개 종목 리스트 + DB 입력</li>
+        <li>글 템플릿 확정 (1개 종목 실제 작성 후 수정)</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--accent);">
+      <h3 style="color:var(--accent);">Phase 1 — 수동 검증 (1~2개월차)</h3>
+      <p style="color:var(--muted); margin-bottom:0.8rem;">정말 될지 확인하는 단계. 돈 거의 안 씀.</p>
+      <ul>
+        <li>KR 4~5개 + US 2~3개 종목 발행</li>
+        <li>주 2회 발행 (화/금)</li>
+        <li>Tier 1 위주, 개별 종목 분석 100%</li>
+        <li><strong>성공 기준:</strong> 6~8주 내 유입 증가 추세 확인</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--yellow);">
+      <h3 style="color:var(--yellow);">Phase 2 — 반자동 운영 (3~4개월차)</h3>
+      <p style="color:var(--muted); margin-bottom:0.8rem;">사람이 꼭 봐야 하는 구간만 남기고 자동화</p>
+      <ul>
+        <li>종목 누적 12~15개, 산업 분석 시작</li>
+        <li>n8n self-hosted 도입 (VPS ~1~2만원/월)</li>
+        <li>종목 60% / 산업 25% / 경쟁사 비교 15%</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--green);">
+      <h3 style="color:var(--green);">Phase 3 — 수익화 검증 (5~6개월차)</h3>
+      <p style="color:var(--muted); margin-bottom:0.8rem;">숫자로 확인될 때만 투자 확대</p>
+      <ul>
+        <li>월간 유입 추세 증가 확인</li>
+        <li>기존 글 업데이트로 추가 조회 발생 확인</li>
+        <li>고성과 주제 집중, 저성과 종목 제거</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--purple);">
+      <h3 style="color:var(--purple);">Phase 4 — 수익 최적화 (6개월 이후)</h3>
+      <p style="color:var(--muted); margin-bottom:0.8rem;">"새 글 계속 쓰기"에서 "기존 DB 활용 극대화"로</p>
+      <ul>
+        <li>실적 시즌 업데이트 자동 재소환</li>
+        <li>사후 검증 글 (트랙레코드)</li>
+        <li>경쟁사 교차 분석</li>
+        <li>사람은 판단만 → 나머지는 DB + 자동화</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">P&L 프로젝션 (기준 시나리오)</h2>
+  <div class="card" style="max-width:800px;">
+    <table>
+      <thead><tr><th>단계</th><th>월 PV</th><th>월 비용</th><th>보수적</th><th>기준</th><th>공격적</th></tr></thead>
+      <tbody>
+        <tr><td>Phase 0~1</td><td>~30K</td><td>~1만</td><td>8만</td><td style="color:var(--green); font-weight:600;">17만</td><td>29만</td></tr>
+        <tr><td>Phase 2</td><td>~70K</td><td>~2만</td><td>19만</td><td style="color:var(--green); font-weight:600;">40만</td><td>68만</td></tr>
+        <tr><td>Phase 3</td><td>~100K</td><td>~3만</td><td>27만</td><td style="color:var(--green); font-weight:600;">57만</td><td>97만</td></tr>
+        <tr><td>Phase 4</td><td>~300K</td><td>~5만</td><td>85만</td><td style="color:var(--green); font-weight:600;">175만</td><td>295만</td></tr>
+        <tr style="border-top:2px solid var(--accent);">
+          <td style="font-weight:700;">연간 합계</td><td></td><td>~30~50만</td>
+          <td></td><td style="color:var(--accent); font-weight:700;">700~1,000만</td><td></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">※ 가설적 추론. 광고 단가·PV당 수익은 플랫폼·주제·유입국가에 따라 달라짐.</p>
+  </div>
+</div>
+
+<!-- Section: Comparison -->
+<div id="comparison" class="section">
+  <h2 style="margin-bottom:1.5rem; color:var(--accent);">기존 PDF vs 이 시스템 비교</h2>
+
+  <div class="compare-grid" style="margin-bottom:2rem;">
+    <div class="compare-col pdf">
+      <h3>📄 PDF가 더 나은 점</h3>
+      <ul>
+        <li><strong>2인 부업 + 저자본 전제</strong> 명확</li>
+        <li><strong>3-Tier 발행 구조</strong> — 일 10건 가능</li>
+        <li><strong>목표주가 방법론 4유형</strong> 체계화</li>
+        <li><strong>투자 아이디어 taxonomy 7가지</strong></li>
+        <li><strong>자동화 OK/금지 경계선</strong> 명확</li>
+        <li><strong>P&L 프로젝션</strong> — 수익 시나리오</li>
+        <li><strong>핵심 원칙 5조</strong> — 운영 규율</li>
+        <li><strong>n8n + Baserow</strong> 툴 스택</li>
+      </ul>
+    </div>
+    <div class="compare-col system">
+      <h3>💻 이 시스템이 더 나은 점</h3>
+      <ul>
+        <li><strong>DB 필드 60+</strong> — 매크로 연동 가능</li>
+        <li><strong>매크로-종목 연동 로직</strong> — sensitivity 4단계</li>
+        <li><strong>종목 선정 MECE 9기준</strong> + Value Trap 필터</li>
+        <li><strong>운영 리스크 매트릭스</strong> 6종</li>
+        <li><strong>글 템플릿 완성도</strong> — 확신도, 면책 등</li>
+        <li><strong>플랫폼 6기준 매트릭스</strong></li>
+        <li><strong>트랙레코드 투명 공개 체계</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom:1rem; color:var(--accent);">통합 채택 매트릭스</h3>
+  <div class="card" style="max-width:800px;">
+    <table>
+      <thead><tr><th>항목</th><th>채택 출처</th></tr></thead>
+      <tbody>
+        <tr><td>운영 구조 (2인 부업, 3-Tier, 주간 루틴)</td><td><span class="tag tag-yellow">PDF</span></td></tr>
+        <tr><td>투자 아이디어 taxonomy 7가지</td><td><span class="tag tag-yellow">PDF</span></td></tr>
+        <tr><td>목표주가 방법론 4유형</td><td><span class="tag tag-yellow">PDF</span></td></tr>
+        <tr><td>자동화 OK/금지 경계선</td><td><span class="tag tag-yellow">PDF</span></td></tr>
+        <tr><td>P&L 프로젝션</td><td><span class="tag tag-yellow">PDF</span></td></tr>
+        <tr><td>핵심 원칙 5조</td><td><span class="tag tag-yellow">PDF</span></td></tr>
+        <tr><td>툴 스택 (n8n + Sheets → Baserow)</td><td><span class="tag tag-yellow">PDF</span></td></tr>
+        <tr><td>DB 필드 설계 (60+ 필드)</td><td><span class="tag tag-blue">시스템</span></td></tr>
+        <tr><td>매크로-종목 연동 로직</td><td><span class="tag tag-blue">시스템</span></td></tr>
+        <tr><td>종목 선정 기준 9가지</td><td><span class="tag tag-blue">시스템</span></td></tr>
+        <tr><td>운영 리스크 통제 매트릭스</td><td><span class="tag tag-blue">시스템</span></td></tr>
+        <tr><td>트랙레코드 체계</td><td><span class="tag tag-blue">시스템</span></td></tr>
+        <tr><td>플랫폼 평가 매트릭스</td><td><span class="tag tag-blue">시스템</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
