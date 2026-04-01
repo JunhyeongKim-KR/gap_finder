@@ -104,19 +104,17 @@ gap_finder/
 └── viz/                    ← 시각화 대시보드
 ```
 
-### 각 폴더가 뭘 하는 곳인지
+### 각 폴더 안내 (클릭하면 상세 설명)
 
-| 폴더 | 한 줄 설명 | 누가 쓰나 |
-|---|---|---|
-| **board/requests/** | "이거 해줘"를 남기는 곳 | CEO |
-| **board/decisions/** | "이렇게 하기로 했다"를 남기는 곳 | CEO + CTO |
-| **board/reviews/** | 글 보고 "여기 고쳐줘"를 남기는 곳 | CEO |
-| **status/** | 지금 어디까지 왔는지 보는 곳 | 자동 업데이트 |
-| **docs/** | 사업의 설계도 (전략·원칙·로드맵) | CEO + CTO |
-| **output/** | 완성된 종목 분석 글 | Claude 생성 → CEO 검수 |
-| **db/** | 종목 데이터가 저장된 곳 | CTO |
-| **scripts/** | 자동화 코드 | CTO |
-| **viz/** | 시각화 대시보드 | CTO |
+| 폴더 | 한 줄 설명 | 누가 쓰나 | 상세 |
+|---|---|---|---|
+| **board/** | CEO·CTO 소통 공간 (요청·결정·리뷰) | CEO + CTO | [열기](board/README.md) |
+| **status/** | 지금 어디까지 왔는지 보는 곳 | 자동 업데이트 | [열기](status/README.md) |
+| **docs/** | 사업의 설계도 (전략·원칙·로드맵) | CEO + CTO | [열기](docs/README.md) |
+| **output/** | 완성된 종목 분석 글 | Claude 생성 → CEO 검수 | [열기](output/README.md) |
+| **db/** | 종목 데이터가 저장된 곳 | CTO | [열기](db/README.md) |
+| **scripts/** | 자동화 코드 | CTO | [열기](scripts/README.md) |
+| **viz/** | 시각화 대시보드 | CTO | [열기](viz/README.md) |
 
 ---
 
