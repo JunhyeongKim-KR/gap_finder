@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GapFinder — 워크플로우 실증 (삼성전자)</title>
+<title>GapFinder — 워크플로우 실증</title>
 <style>
   :root {
     --bg: #0d1117; --surface: #161b22; --border: #30363d;
@@ -88,20 +88,28 @@
 
 <div class="header">
   <h1><span>Gap</span>Finder 워크플로우 실증</h1>
-  <p>삼성전자(005930.KS)를 대상으로 전체 파이프라인을 1회 실행한 결과</p>
+  <p>실제 파이프라인 실행 결과 — 종목 탭을 눌러 확인하세요</p>
+</div>
+
+<!-- Stock Tabs -->
+<div style="display:flex; gap:0.5rem; justify-content:center; margin-bottom:2rem; flex-wrap:wrap;">
+  <div class="stock-tab active" onclick="showStock('samsung')" id="tab-samsung" style="padding:0.6rem 1.2rem; border:2px solid var(--accent); border-radius:8px; background:var(--accent); color:#000; cursor:pointer; font-weight:600; font-size:0.9rem; transition:all 0.2s;">삼성전자 (005930.KS)</div>
+  <div class="stock-tab" onclick="showStock('nike')" id="tab-nike" style="padding:0.6rem 1.2rem; border:2px solid var(--border); border-radius:8px; background:var(--surface); color:var(--muted); cursor:pointer; font-weight:600; font-size:0.9rem; transition:all 0.2s;">나이키 (NKE)</div>
 </div>
 
 <!-- Summary Stats -->
 <div class="stat-row">
   <div class="stat-box"><div class="num">5</div><div class="label">생성된 테이블</div></div>
   <div class="stat-box"><div class="num">60+</div><div class="label">stock_master 필드</div></div>
-  <div class="stat-box"><div class="num">4</div><div class="label">분기 재무 데이터</div></div>
-  <div class="stat-box"><div class="num">5</div><div class="label">일별 시세 데이터</div></div>
-  <div class="stat-box"><div class="num">1</div><div class="label">생성된 분석 글</div></div>
+  <div class="stat-box"><div class="num">2</div><div class="label">분석 완료 종목</div></div>
+  <div class="stat-box"><div class="num">8</div><div class="label">분기 재무 데이터</div></div>
+  <div class="stat-box"><div class="num">2</div><div class="label">생성된 분석 글</div></div>
 </div>
 
+<!-- ========== SAMSUNG SECTION ========== -->
+<div id="stock-samsung">
 <!-- Pipeline Steps -->
-<h2 style="color:var(--accent); text-align:center; margin: 2rem 0 1rem;">실행 파이프라인</h2>
+<h2 style="color:var(--accent); text-align:center; margin: 2rem 0 1rem;">실행 파이프라인 — 삼성전자</h2>
 
 <div class="pipeline">
 
@@ -357,24 +365,267 @@
 
 </div>
 
+</div><!-- end stock-samsung -->
+
+<!-- ========== NIKE SECTION ========== -->
+<div id="stock-nike" style="display:none;">
+
+<h2 style="color:var(--accent); text-align:center; margin: 2rem 0 1rem;">실행 파이프라인 — 나이키(NKE)</h2>
+
+<div class="pipeline">
+
+  <!-- Step 1 -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('n1')">
+      <div class="step-header">
+        <div class="step-num done">1</div>
+        <div class="step-title">종목 데이터 입력 — Nike</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">stock_master + financials(4Q) + price_daily(5일) 입력</div>
+      <div class="step-detail" id="n1">
+        <div class="code-block">$ python3 scripts/seed_nike.py</div>
+        <div class="data-grid">
+          <div class="data-card">
+            <h4>기본 정보</h4>
+            <table>
+              <tr><td>티커</td><td>NKE (NYSE)</td></tr>
+              <tr><td>섹터</td><td>Consumer Discretionary / 의류·신발</td></tr>
+              <tr><td>시총</td><td>약 $88B</td></tr>
+              <tr><td>투자유형</td><td><span class="tag tag-red">낙폭과대</span></td></tr>
+            </table>
+          </div>
+          <div class="data-card">
+            <h4>매출 구성</h4>
+            <div class="sensitivity-bar"><span class="sensitivity-label">신발</span><div class="sensitivity-fill" style="width:65%; background:var(--accent);">65%</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">의류</span><div class="sensitivity-fill" style="width:27%; background:var(--purple);">27%</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">장비/기타</span><div class="sensitivity-fill" style="width:8%; background:var(--muted);">8%</div></div>
+          </div>
+          <div class="data-card">
+            <h4>투자 분석</h4>
+            <table>
+              <tr><td>핵심 논거</td><td>DTC 과속 후유증 → CEO 교체 → 도매 복귀 + 혁신 복원</td></tr>
+              <tr><td>역발상 포인트</td><td>시장은 "나이키 끝" 반영 → 실제 브랜드 파워 건재</td></tr>
+            </table>
+          </div>
+          <div class="data-card">
+            <h4>해자(Moat)</h4>
+            <table>
+              <tr><td>브랜드 파워</td><td>글로벌 스포츠웨어 1위</td></tr>
+              <tr><td>선수 스폰서십</td><td>조던/르브론/음바페</td></tr>
+              <tr><td>마케팅 규모</td><td>연 $4B+ (신흥 추격 불가)</td></tr>
+              <tr><td>글로벌 유통</td><td>190개국 판매망</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 2: Financials -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('n2')">
+      <div class="step-header">
+        <div class="step-num done">2</div>
+        <div class="step-title">재무 데이터 확인</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">FY25 4개 분기 재무제표 + 최근 5일 시세</div>
+      <div class="step-detail" id="n2">
+        <h4 style="color:var(--accent); margin-bottom:0.5rem;">분기별 재무 ($B)</h4>
+        <table>
+          <thead><tr><th>분기</th><th>매출</th><th>영업이익</th><th>순이익</th><th>EPS</th><th>ROE</th><th>PER</th></tr></thead>
+          <tbody>
+            <tr><td>FY25 Q1</td><td>11.6</td><td>1.2</td><td>0.79</td><td>$0.52</td><td>6.5%</td><td>28.0</td></tr>
+            <tr><td>FY25 Q2</td><td>12.4</td><td>1.6</td><td>1.16</td><td>$0.78</td><td>9.3%</td><td>24.0</td></tr>
+            <tr style="background:rgba(248,81,73,0.05);"><td><strong>FY25 Q3</strong></td><td><strong>11.3</strong></td><td><strong>0.9</strong></td><td><strong>0.58</strong></td><td><strong>$0.38</strong></td><td><strong>4.8%</strong></td><td><strong>32.0</strong></td></tr>
+            <tr><td>FY25 Q4</td><td>12.0</td><td>1.1</td><td>0.74</td><td>$0.49</td><td>6.0%</td><td>26.0</td></tr>
+          </tbody>
+        </table>
+        <p style="color:var(--red); font-size:0.8rem; margin-top:0.5rem;">Q3 최악: 재고 정리 할인 → 마진 급락. Q4부터 도매 복귀 효과 시작.</p>
+
+        <h4 style="color:var(--accent); margin: 1rem 0 0.5rem;">최근 시세 ($)</h4>
+        <table>
+          <thead><tr><th>일자</th><th>시가</th><th>고가</th><th>저가</th><th>종가</th><th>거래량</th></tr></thead>
+          <tbody>
+            <tr><td>03.31</td><td>58.50</td><td>59.50</td><td>58.00</td><td><strong>59.00</strong></td><td>8.8M</td></tr>
+            <tr><td>03.28</td><td>59.80</td><td>60.50</td><td>58.00</td><td>58.50</td><td>12.0M</td></tr>
+            <tr><td>03.27</td><td>59.10</td><td>60.20</td><td>58.50</td><td>59.80</td><td>10.1M</td></tr>
+            <tr><td>03.26</td><td>58.20</td><td>59.50</td><td>57.80</td><td>59.10</td><td>9.2M</td></tr>
+            <tr><td>03.25</td><td>57.50</td><td>58.80</td><td>57.00</td><td>58.20</td><td>8.5M</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 3: Valuation -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('n3')">
+      <div class="step-header">
+        <div class="step-num done">3</div>
+        <div class="step-title">밸류에이션 분석</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">PER/PBR 밴드 위치 확인 + 목표주가 3-시나리오</div>
+      <div class="step-detail" id="n3">
+        <div class="data-grid">
+          <div class="data-card">
+            <h4>PER 밴드 (5년)</h4>
+            <div class="sensitivity-bar"><span class="sensitivity-label">현재 22x</span><div class="sensitivity-fill" style="width:15%; background:var(--red);">하위 15%</div></div>
+            <p style="color:var(--muted); font-size:0.8rem; margin-top:0.3rem;">범위: 18x ~ 45x</p>
+          </div>
+          <div class="data-card">
+            <h4>PBR 밴드 (5년)</h4>
+            <div class="sensitivity-bar"><span class="sensitivity-label">현재 7.5x</span><div class="sensitivity-fill" style="width:13%; background:var(--red);">하위 13%</div></div>
+            <p style="color:var(--muted); font-size:0.8rem; margin-top:0.3rem;">범위: 6.0x ~ 18.0x</p>
+          </div>
+        </div>
+
+        <h4 style="color:var(--accent); margin: 1rem 0 0.5rem;">목표주가 시나리오</h4>
+        <div class="scenario-grid">
+          <div class="scenario" style="border:1px solid var(--green);">
+            <div style="color:var(--green); font-weight:600;">낙관</div>
+            <div class="price" style="color:var(--green);">$95</div>
+            <div class="pct" style="color:var(--green);">+61.0%</div>
+            <p style="color:var(--muted); font-size:0.75rem; margin-top:0.3rem;">도매 정상화 + 혁신 히트 + 중국 회복</p>
+          </div>
+          <div class="scenario" style="border:2px solid var(--accent);">
+            <div style="color:var(--accent); font-weight:600;">기본</div>
+            <div class="price" style="color:var(--accent);">$80</div>
+            <div class="pct" style="color:var(--accent);">+35.6%</div>
+            <p style="color:var(--muted); font-size:0.75rem; margin-top:0.3rem;">도매 점진적 회복 + 마진 안정화</p>
+          </div>
+          <div class="scenario" style="border:1px solid var(--red);">
+            <div style="color:var(--red); font-weight:600;">비관</div>
+            <div class="price" style="color:var(--red);">$50</div>
+            <div class="pct" style="color:var(--red);">-15.3%</div>
+            <p style="color:var(--muted); font-size:0.75rem; margin-top:0.3rem;">경쟁 심화 + 매출 역성장</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 4: Content -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('n4')">
+      <div class="step-header">
+        <div class="step-num done">4</div>
+        <div class="step-title">콘텐츠 생성 — 네이버 블로그 스타일</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">DB 데이터 + 네이버 SEO 최적화 → 초보자 친화적 분석 글</div>
+      <div class="step-detail" id="n4">
+        <div class="code-block">플랫폼: 네이버 블로그 | 스타일: 구어체, 초보 친화 | 파일: output/NKE_나이키_20260401_naver.md</div>
+        <div class="data-card" style="margin-top:1rem;">
+          <h4>네이버 블로그 최적화 포인트</h4>
+          <table>
+            <tr><td>제목</td><td>나이키(NKE) 주가 전망 | 60% 폭락한 글로벌 1위, 지금이 기회일까?</td></tr>
+            <tr><td>키워드 배치</td><td>종목명 + 주가 전망 앞배치 (네이버 SEO)</td></tr>
+            <tr><td>문체</td><td>구어체, ~입니다/~거든요/~에요 (블로그 톤)</td></tr>
+            <tr><td>구조</td><td>스토리텔링형 — 문제→반론→데이터→결론</td></tr>
+            <tr><td>태그</td><td>#나이키 #NKE #나이키주가전망 등 10개</td></tr>
+          </table>
+        </div>
+        <div class="data-card" style="margin-top:0.5rem;">
+          <h4>삼성전자(Tier1) vs 나이키(네이버) 비교</h4>
+          <table>
+            <tr><th></th><th>삼성전자</th><th>나이키</th></tr>
+            <tr><td>플랫폼</td><td>티스토리 (원문)</td><td>네이버 블로그</td></tr>
+            <tr><td>문체</td><td>리포트형 (~이다)</td><td>블로그형 (~입니다)</td></tr>
+            <tr><td>분량</td><td>장문 심화</td><td>중문 접근성↑</td></tr>
+            <tr><td>타겟</td><td>중급 투자자</td><td>초보 투자자</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow done"></div>
+
+  <!-- Step 5: Result -->
+  <div class="step">
+    <div class="step-card done" onclick="toggleDetail('n5')">
+      <div class="step-header">
+        <div class="step-num done">5</div>
+        <div class="step-title">최종 판단 결과</div>
+        <span class="tag tag-green">완료</span>
+      </div>
+      <div class="step-desc">Nike(NKE) 네이버 블로그 분석 글 — 판단: BUY</div>
+      <div class="step-detail show" id="n5">
+        <div class="verdict-box">
+          <h3>BUY &mdash; 확신도 MEDIUM</h3>
+          <p style="color:var(--muted);">보유기간: 6~12개월 | 기본 목표: $80 (+35.6%)</p>
+        </div>
+
+        <div class="data-grid">
+          <div class="data-card">
+            <h4>핵심 논거</h4>
+            <ul style="list-style:none; padding:0;">
+              <li style="padding:0.3rem 0; color:var(--muted); border-bottom:1px solid var(--border);">PER/PBR 5년 밴드 하위 15% — 글로벌 1위 치고 역사적 저평가</li>
+              <li style="padding:0.3rem 0; color:var(--muted); border-bottom:1px solid var(--border);">신임 CEO 엘리엇 힐: 도매 복귀 + 혁신 복원 실행 중</li>
+              <li style="padding:0.3rem 0; color:var(--muted);">On/Hoka 잠식이 구조적인지 판단 어려움 → MEDIUM</li>
+            </ul>
+          </div>
+          <div class="data-card">
+            <h4>매크로 민감도</h4>
+            <div class="sensitivity-bar"><span class="sensitivity-label">소비심리</span><div class="sensitivity-fill" style="width:90%; background:var(--green);">HIGH +</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">중국 경기</span><div class="sensitivity-fill" style="width:90%; background:var(--green);">HIGH +</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">달러 강세</span><div class="sensitivity-fill" style="width:60%; background:var(--red);">MID -</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">금리</span><div class="sensitivity-fill" style="width:60%; background:var(--yellow);">MID -</div></div>
+            <div class="sensitivity-bar"><span class="sensitivity-label">면화 가격</span><div class="sensitivity-fill" style="width:60%; background:var(--yellow);">MID -</div></div>
+          </div>
+          <div class="data-card">
+            <h4>철회 조건</h4>
+            <ul style="list-style:none; padding:0;">
+              <li style="padding:0.3rem 0; color:var(--red); border-bottom:1px solid var(--border);">2분기 연속 매출 역성장</li>
+              <li style="padding:0.3rem 0; color:var(--red); border-bottom:1px solid var(--border);">북미 DTC 매출 감소 지속</li>
+              <li style="padding:0.3rem 0; color:var(--red); border-bottom:1px solid var(--border);">CEO 전략 변경 6개월 성과 없음</li>
+              <li style="padding:0.3rem 0; color:var(--red);">그로스 마진 40% 하회</li>
+            </ul>
+            <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">참고 손절가: $45</p>
+          </div>
+          <div class="data-card">
+            <h4>리스크</h4>
+            <table>
+              <tr><td>신흥브랜드 경쟁</td><td><span class="tag tag-red">HIGH</span></td></tr>
+              <tr><td>도매채널 복구</td><td><span class="tag tag-red">HIGH</span></td></tr>
+              <tr><td>중국 소비</td><td><span class="tag tag-yellow">MID</span></td></tr>
+              <tr><td>재고 과잉</td><td><span class="tag tag-yellow">MID</span></td></tr>
+              <tr><td>글로벌 경기</td><td><span class="tag tag-yellow">MID</span></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- end stock-nike -->
+
 <!-- File Structure -->
 <h2 style="color:var(--accent); margin: 2rem 0 1rem;">생성된 파일 구조</h2>
 <div class="data-card" style="max-width:600px;">
   <pre style="color:var(--green);">gap_finder/
 ├── db/
-│   └── gapfinder.db          <span style="color:var(--muted);"># SQLite DB (5 tables)</span>
+│   └── gapfinder.db                    <span style="color:var(--muted);"># SQLite DB (5 tables, 2종목)</span>
 ├── scripts/
-│   └── init_db.py            <span style="color:var(--muted);"># DB 초기화 + 샘플 입력</span>
+│   ├── init_db.py                      <span style="color:var(--muted);"># DB 초기화 + 삼성전자</span>
+│   └── seed_nike.py                    <span style="color:var(--muted);"># 나이키 데이터 입력</span>
 ├── output/
-│   └── 005930_삼성전자_20260401.md  <span style="color:var(--muted);"># 생성된 분석 글</span>
-├── docs/                      <span style="color:var(--muted);"># 전략 문서 11종</span>
+│   ├── 005930_삼성전자_20260401.md      <span style="color:var(--muted);"># 티스토리 원문 (Tier1)</span>
+│   └── NKE_나이키_20260401_naver.md     <span style="color:var(--muted);"># 네이버 블로그 스타일</span>
+├── docs/                                <span style="color:var(--muted);"># 전략 문서 11종</span>
 └── viz/
-    ├── index.html             <span style="color:var(--muted);"># 시스템 대시보드</span>
-    └── example_workflow.html  <span style="color:var(--muted);"># 이 페이지</span></pre>
+    ├── index.html                       <span style="color:var(--muted);"># 시스템 대시보드</span>
+    └── example_workflow.html            <span style="color:var(--muted);"># 이 페이지</span></pre>
 </div>
 
 <div class="footer">
-  <p>GapFinder 워크플로우 실증 | 삼성전자(005930.KS) | 2026.04.01</p>
+  <p>GapFinder 워크플로우 실증 | 삼성전자 · 나이키 | 2026.04.01</p>
   <p style="margin-top:0.3rem;">이 문서는 시스템 검증용이며, 투자 권유가 아닙니다.</p>
 </div>
 
@@ -384,6 +635,26 @@
 function toggleDetail(id) {
   const el = document.getElementById(id);
   el.classList.toggle('show');
+}
+
+function showStock(name) {
+  // Hide all stock sections
+  document.getElementById('stock-samsung').style.display = 'none';
+  document.getElementById('stock-nike').style.display = 'none';
+
+  // Show selected
+  document.getElementById('stock-' + name).style.display = 'block';
+
+  // Update tab styles
+  document.querySelectorAll('.stock-tab').forEach(t => {
+    t.style.background = 'var(--surface)';
+    t.style.color = 'var(--muted)';
+    t.style.borderColor = 'var(--border)';
+  });
+  const activeTab = document.getElementById('tab-' + name);
+  activeTab.style.background = 'var(--accent)';
+  activeTab.style.color = '#000';
+  activeTab.style.borderColor = 'var(--accent)';
 }
 </script>
 </body>
