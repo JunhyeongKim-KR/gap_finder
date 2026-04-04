@@ -61,9 +61,18 @@
 5. 목표주가는 시나리오와 가정에 따라 제시
 6. 철회조건은 '가격'이 아니라 '가설 붕괴 조건'으로 정의
 
+## Agent 해석 엔진 (글 생성 시 필수 참조)
+- 투자 철학 프레임 (22개): docs/12_investment_philosophy.md
+- 글쓰기 원칙 (10개 + 스타일 가이드): docs/13_writing_principles.md
+
+글 생성 시 반드시 위 두 문서를 먼저 읽고, 해당 종목/산업에 적합한 철학 프레임을 최소 3개 선택하여 적용할 것.
+글의 기본 문법: [시장 컨센서스] → [해석의 맹점] → [실제 메커니즘] → [진짜 수혜/피해] → [체크포인트]
+
 ## 참고 문서 위치
-- 전략 문서: docs/ (01~11)
+- 전략 문서: docs/ (01~13)
 - DB 설계: docs/04_database_design.md
 - 글 템플릿: docs/07_article_template.md
 - 체크리스트: docs/09_checklist.md
 - 데이터 파이프라인: docs/10_data_pipeline.md
+- 투자 철학: docs/12_investment_philosophy.md
+- 글쓰기 원칙: docs/13_writing_principles.md

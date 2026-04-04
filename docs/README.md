@@ -18,6 +18,8 @@
 | 09 | [체크리스트](09_checklist.md) | 발행 전·매크로 이슈 시·업로드 전 확인 항목 |
 | 10 | [데이터 파이프라인](10_data_pipeline.md) | 데이터 소스, DB 크기, 토큰 비용, 워크플로우 |
 | 11 | [전략 비교](11_pdf_comparison.md) | 기존 PDF 사업청사진과의 비교 분석 |
+| 12 | [투자 철학 프레임](12_investment_philosophy.md) | Agent 해석 엔진 — 22개 투자 철학 프레임워크 |
+| 13 | [글쓰기 원칙](13_writing_principles.md) | Agent 표현 규칙 — 글의 정체성, 문법, 10대 원칙 |
 
 ## CEO가 우선 읽을 문서
 
