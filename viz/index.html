@@ -110,6 +110,62 @@
   .token-legend { display: flex; flex-direction: column; gap: 0.5rem; }
   .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--muted); }
   .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+  /* Architecture diagram */
+  .arch-layer { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; text-align: center; position: relative; }
+  .arch-layer h4 { margin-bottom: 0.3rem; font-size: 1.1rem; }
+  .arch-layer p { color: var(--muted); font-size: 0.9rem; }
+  .arch-flow { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: 2rem; }
+  .arch-arrow { width: 2px; height: 28px; background: var(--border); position: relative; }
+  .arch-arrow::after { content: ''; position: absolute; bottom: -4px; left: -4px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--border); }
+
+  /* Category cards for data */
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin: 1.5rem 0; }
+  .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem; text-align: center; font-size: 0.85rem; }
+  .cat-card .cat-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+  .cat-card .cat-label { color: var(--muted); font-size: 0.75rem; }
+
+  /* Philosophy framework cards */
+  .fw-category { margin-bottom: 2rem; }
+  .fw-category h3 { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); font-size: 1.2rem; }
+  .fw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; }
+  .fw-card h4 { margin-bottom: 0.5rem; font-size: 1rem; }
+  .fw-card .fw-core { color: var(--text); font-size: 0.9rem; margin-bottom: 0.6rem; font-style: italic; border-left: 3px solid var(--border); padding-left: 0.8rem; }
+  .fw-card ul { list-style: disc; padding-left: 1.2rem; }
+  .fw-card li { padding: 0.2rem 0; color: var(--muted); font-size: 0.85rem; border-bottom: none; }
+
+  /* Grammar pattern box */
+  .grammar-box { background: rgba(88, 166, 255, 0.08); border: 2px solid var(--accent); border-radius: 12px; padding: 1.5rem 2rem; text-align: center; margin-bottom: 2rem; font-size: 1rem; }
+  .grammar-box .grammar-flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; font-size: 1.05rem; font-weight: 600; }
+  .grammar-box .grammar-flow span { color: var(--accent); }
+  .grammar-box .grammar-flow .arrow { color: var(--muted); font-weight: 400; }
+
+  /* Writing principle cards */
+  .wp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; }
+  .wp-num { min-width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+  .wp-content h4 { margin-bottom: 0.3rem; font-size: 0.95rem; color: var(--text); }
+  .wp-content p { color: var(--muted); font-size: 0.85rem; }
+
+  /* Phase indicator */
+  .phase-indicator { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(210, 153, 34, 0.15); border: 1px solid var(--yellow); border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; color: var(--yellow); margin-bottom: 1.5rem; }
+
+  /* Comparison pipeline */
+  .pipeline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+  @media (max-width: 768px) {
+    .pipeline-grid { grid-template-columns: 1fr; }
+    .grammar-box .grammar-flow { flex-direction: column; }
+  }
+
+  /* Completed task */
+  .task-done { text-decoration: line-through; color: var(--muted) !important; opacity: 0.7; }
+  .task-done::before { content: '\2713 '; color: var(--green); font-weight: 700; }
+
+  /* Doc relation diagram */
+  .doc-relation { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center; margin: 1.5rem 0; }
+  .doc-node { background: var(--surface); border: 2px solid var(--border); border-radius: 10px; padding: 0.8rem 1.2rem; text-align: center; min-width: 140px; }
+  .doc-node h5 { font-size: 0.85rem; margin-bottom: 0.2rem; }
+  .doc-node p { color: var(--muted); font-size: 0.75rem; }
+  .doc-connector { color: var(--muted); font-size: 1.5rem; }
 </style>
 </head>
 <body>
@@ -124,6 +180,9 @@
 <!-- Tabs -->
 <div class="tabs">
   <div class="tab active" onclick="showSection('overview')">시스템 개요</div>
+  <div class="tab" onclick="showSection('architecture')">아키텍처</div>
+  <div class="tab" onclick="showSection('philosophy')">투자 철학</div>
+  <div class="tab" onclick="showSection('writing')">글쓰기 원칙</div>
   <div class="tab" onclick="showSection('workflow')">워크플로우</div>
   <div class="tab" onclick="showSection('database')">DB 설계</div>
   <div class="tab" onclick="showSection('tokens')">토큰 & 비용</div>
@@ -135,12 +194,24 @@
 
 <!-- Section: Overview -->
 <div id="overview" class="section active">
+  <div class="phase-indicator">현재 Phase 0 — 설계 정리 단계</div>
+
   <div class="stat-row">
-    <div class="stat-box"><div class="num">30</div><div class="label">초기 커버리지 종목</div></div>
+    <div class="stat-box"><div class="num">2</div><div class="label">현재 커버리지 종목</div></div>
     <div class="stat-box"><div class="num">10건/일</div><div class="label">목표 발행량</div></div>
     <div class="stat-box"><div class="num">~$3/월</div><div class="label">LLM 비용</div></div>
     <div class="stat-box"><div class="num">~3MB</div><div class="label">1년 후 DB 크기</div></div>
     <div class="stat-box"><div class="num">2곳</div><div class="label">사람 개입 지점</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:2rem; border-color:var(--yellow);">
+    <h3 style="color:var(--yellow);">최근 활동 요약</h3>
+    <ul>
+      <li><strong>3-Layer 아키텍처 확정</strong> — CEO 확인: Agent Prompt / DB / System 분리</li>
+      <li><strong>22개 투자 철학 프레임워크</strong> — 4개 카테고리(A~D)로 체계화 완료</li>
+      <li><strong>글쓰기 원칙 10조</strong> — 블로그 정체성, 고정 문법 패턴 확립</li>
+      <li><strong>CTO 실행계획</strong> — Phase 1~4, Q1~Q4 답변 정리</li>
+    </ul>
   </div>
 
   <h2 style="margin-bottom:1.5rem; color:var(--accent);">투자 철학</h2>
@@ -194,6 +265,518 @@
       <tr><td style="color:var(--accent); font-weight:700;">4</td><td>사람은 판단만 한다 — 데이터 정리·초안 생성·재가공은 기계</td></tr>
       <tr><td style="color:var(--accent); font-weight:700;">5</td><td>유료는 병목에만 쓴다 — '편해 보여서' 결제 금지</td></tr>
     </table>
+  </div>
+</div>
+
+<!-- Section: Architecture -->
+<div id="architecture" class="section">
+  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">3-Layer 아키텍처</h2>
+  <p style="text-align:center; color:var(--muted); margin-bottom:2rem;">CEO 확인: 시스템을 3개 레이어로 분리하여 각 역할을 명확히 한다.</p>
+
+  <div class="arch-flow">
+    <div class="arch-layer" style="border-color:var(--accent); background:rgba(88,166,255,0.06); min-width:400px;">
+      <h4 style="color:var(--accent);">Layer 1: Agent Prompt (해석 엔진)</h4>
+      <p>철학(프롬프트) = 해석 엔진</p>
+      <p style="font-size:0.8rem; margin-top:0.5rem;">투자 철학 22개 프레임워크가 프롬프트에 내장되어<br>시장 데이터를 '역발상' 관점으로 해석</p>
+    </div>
+    <div class="arch-arrow"></div>
+    <div class="arch-layer" style="border-color:var(--green); background:rgba(63,185,80,0.06); min-width:400px;">
+      <h4 style="color:var(--green);">Layer 2: DB (사실 데이터)</h4>
+      <p>데이터 스키마(DB) = 재료 저장</p>
+      <p style="font-size:0.8rem; margin-top:0.5rem;">시세, 재무, 매크로, 컨센서스 등<br>A~J 카테고리의 팩트 데이터를 구조화 저장</p>
+    </div>
+    <div class="arch-arrow"></div>
+    <div class="arch-layer" style="border-color:var(--purple); background:rgba(188,140,255,0.06); min-width:400px;">
+      <h4 style="color:var(--purple);">Layer 3: System (연결)</h4>
+      <p>시스템 = 연결하여 글 생성</p>
+      <p style="font-size:0.8rem; margin-top:0.5rem;">n8n 워크플로우, 크롤러, 발행 파이프라인이<br>프롬프트+DB를 조합하여 콘텐츠 생성 및 배포</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:2rem; border-color:var(--accent);">
+    <h3>흐름 요약</h3>
+    <p style="color:var(--text); font-size:1rem; text-align:center; padding:1rem 0;">
+      <span style="color:var(--accent); font-weight:600;">철학(프롬프트) = 해석 엔진</span>
+      <span style="color:var(--muted);"> &rarr; </span>
+      <span style="color:var(--green); font-weight:600;">데이터 스키마(DB) = 재료 저장</span>
+      <span style="color:var(--muted);"> &rarr; </span>
+      <span style="color:var(--purple); font-weight:600;">시스템 = 연결하여 글 생성</span>
+    </p>
+  </div>
+
+  <h2 style="margin:2rem 0 1rem; color:var(--accent);">데이터 카테고리 A~J</h2>
+  <div class="cat-grid">
+    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">📊</div><div style="color:var(--accent); font-weight:600;">A. 시세</div><div class="cat-label">일별 OHLCV, 시총</div></div>
+    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">💰</div><div style="color:var(--green); font-weight:600;">B. 재무</div><div class="cat-label">분기 실적, 밸류에이션</div></div>
+    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">🎯</div><div style="color:var(--yellow); font-weight:600;">C. 컨센서스</div><div class="cat-label">TP, 투자의견 분포</div></div>
+    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">📢</div><div style="color:var(--red); font-weight:600;">D. 공시</div><div class="cat-label">DART/EDGAR 공시</div></div>
+    <div class="cat-card" style="border-color:var(--purple);"><div class="cat-icon">🌐</div><div style="color:var(--purple); font-weight:600;">E. 매크로</div><div class="cat-label">금리, 환율, 유가</div></div>
+    <div class="cat-card" style="border-color:var(--orange);"><div class="cat-icon">📰</div><div style="color:var(--orange); font-weight:600;">F. 뉴스</div><div class="cat-label">종목/산업 뉴스</div></div>
+    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">🏭</div><div style="color:var(--accent); font-weight:600;">G. 산업</div><div class="cat-label">업황, 공급/수요</div></div>
+    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">🔗</div><div style="color:var(--green); font-weight:600;">H. 경쟁사</div><div class="cat-label">피어 비교 데이터</div></div>
+    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">👥</div><div style="color:var(--yellow); font-weight:600;">I. 주주</div><div class="cat-label">지분구조, 자사주</div></div>
+    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">📝</div><div style="color:var(--red); font-weight:600;">J. 콘텐츠</div><div class="cat-label">발행 이력, 성과</div></div>
+  </div>
+
+  <h2 style="margin:2rem 0 1rem; color:var(--accent);">크롤링 파이프라인 비교</h2>
+  <div class="pipeline-grid">
+    <div class="card" style="border-color:var(--accent);">
+      <h3 style="color:var(--accent);">배경지식용 크롤링</h3>
+      <p style="color:var(--muted); margin-bottom:0.8rem;">DB에 팩트를 쌓아 글의 재료로 사용</p>
+      <ul>
+        <li><strong>목적:</strong> 종목 DB 최신화</li>
+        <li><strong>주기:</strong> 일 2회 (07:00, 18:00)</li>
+        <li><strong>소스:</strong> KRX, DART, Yahoo, FRED</li>
+        <li><strong>저장:</strong> SQLite 정형 테이블</li>
+        <li><strong>활용:</strong> LLM 프롬프트에 컨텍스트로 주입</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--purple);">
+      <h3 style="color:var(--purple);">모델개선용 크롤링</h3>
+      <p style="color:var(--muted); margin-bottom:0.8rem;">사후 검증으로 투자 모델 정확도 개선</p>
+      <ul>
+        <li><strong>목적:</strong> 예측 vs 실제 비교</li>
+        <li><strong>주기:</strong> 실적 발표 후 자동</li>
+        <li><strong>소스:</strong> 실적 공시, 주가 변동</li>
+        <li><strong>저장:</strong> 트랙레코드 테이블</li>
+        <li><strong>활용:</strong> 프레임워크 가중치 조정, 신뢰도 업데이트</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Section: Investment Philosophy -->
+<div id="philosophy" class="section">
+  <h2 style="margin-bottom:1rem; color:var(--accent); text-align:center;">22개 투자 철학 프레임워크</h2>
+  <p style="text-align:center; color:var(--muted); margin-bottom:2rem;">4개 카테고리로 분류된 투자 해석의 체계적 도구</p>
+
+  <div class="grammar-box">
+    <div style="color:var(--muted); font-size:0.85rem; margin-bottom:0.5rem;">고정 문법 패턴 (모든 글의 논리 구조)</div>
+    <div class="grammar-flow">
+      <span>[시장 컨센서스]</span>
+      <span class="arrow">&rarr;</span>
+      <span>[해석의 맹점]</span>
+      <span class="arrow">&rarr;</span>
+      <span>[실제 메커니즘]</span>
+      <span class="arrow">&rarr;</span>
+      <span>[진짜 수혜/피해]</span>
+      <span class="arrow">&rarr;</span>
+      <span>[체크포인트]</span>
+    </div>
+  </div>
+
+  <!-- Category A -->
+  <div class="fw-category">
+    <h3 style="color:var(--accent); border-color:var(--accent);">A. 산업/거시를 해석하는 철학 (8개)</h3>
+    <div class="card-grid">
+      <div class="fw-card" style="border-left:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">1. 자본 사이클형</h4>
+        <div class="fw-core">수요보다 공급을 먼저 보는 산업 분석</div>
+        <ul>
+          <li>지금 이 산업은 공급이 늘고 있는가, 줄고 있는가</li>
+          <li>CAPEX가 감가상각(D&amp;A)보다 큰가</li>
+          <li>신규 진입자나 IPO가 늘고 있는가</li>
+          <li>지금이 사이클 상단인가, 하단인가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">2. 경쟁우위/진입장벽형</h4>
+        <div class="fw-core">초과수익이 왜 유지되는지를 보는 프레임</div>
+        <ul>
+          <li>누구나 따라 할 수 있는가</li>
+          <li>고객이 쉽게 떠날 수 있는가</li>
+          <li>원가 우위가 복제 가능한가</li>
+          <li>규모의 경제가 있는가</li>
+          <li>브랜드/전환비용/네트워크 효과가 있는가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">3. 제도·인프라 설계형</h4>
+        <div class="fw-core">기업보다 거버넌스 구조를 먼저 보는 산업 분석</div>
+        <ul>
+          <li>정부 주도형인지 민간 자율형인지</li>
+          <li>참여가 의무인지 자율인지</li>
+          <li>표준 API가 단일인지 복수인지</li>
+          <li>허브 구조인지 직접 연계 구조인지</li>
+          <li>법적으로 권리가 강한지, 실행 강제력이 있는지</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">4. 생태계 지속가능성형</h4>
+        <div class="fw-core">확산 속도보다 생태계의 생존 가능성을 보는 프레임</div>
+        <ul>
+          <li>참여자들에게 경제적 유인이 있는가</li>
+          <li>비용 부담이 너무 크지 않은가</li>
+          <li>특정 대형 사업자만 살아남는 구조인가</li>
+          <li>사업자 이탈이 발생하고 있는가</li>
+          <li>고정비/과금/규제가 지나치게 무겁지 않은가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">5. 데이터 거버넌스형</h4>
+        <div class="fw-core">데이터는 기술이 아니라 권리·구조·통제의 문제</div>
+        <ul>
+          <li>데이터의 소유권은 누구에게 있는가</li>
+          <li>권한 체계는 어떻게 구성되는가</li>
+          <li>데이터 이동은 실시간인가, 배치인가</li>
+          <li>데이터가 표준화돼 있는가</li>
+          <li>허브/중계기관이 있는가</li>
+          <li>플랫폼 종속(lock-in)이 있는가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">6. 자원·에너지 패권형</h4>
+        <div class="fw-core">기술의 시대 뒤에는 항상 자원과 전력의 제약이 있다</div>
+        <ul>
+          <li>누가 자원을 보유하는가</li>
+          <li>누가 전력을 싸게 공급할 수 있는가</li>
+          <li>누가 원자재를 가공하고 운송하는가</li>
+          <li>자원 병목이 어떤 산업의 원가를 좌우하는가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">7. 지정학 블록 재편형</h4>
+        <div class="fw-core">국가 간 관계를 단기 뉴스가 아니라 구조 변화로 읽는 방식</div>
+        <ul>
+          <li>미국이 얻는 것과 잃는 것이 무엇인가</li>
+          <li>유럽/동북아/중동/중앙아시아가 어떻게 다시 묶일 수 있는가</li>
+          <li>한국은 어떤 블록에서 어떤 역할을 할 수 있는가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--accent);">
+        <h4 style="color:var(--accent);">8. 병목 인프라형</h4>
+        <div class="fw-core">병목을 쥔 업체가 진짜 수혜자</div>
+        <ul>
+          <li>시장이 주목하는 표면 테마는 무엇인가</li>
+          <li>실제 병목은 무엇인가</li>
+          <li>병목을 쥔 업체가 누구인가</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category B -->
+  <div class="fw-category">
+    <h3 style="color:var(--green); border-color:var(--green);">B. 기업/종목을 해석하는 철학 (8개)</h3>
+    <div class="card-grid">
+      <div class="fw-card" style="border-left:3px solid var(--green);">
+        <h4 style="color:var(--green);">9. 기업가치 평가형</h4>
+        <div class="fw-core">사업가치 대비 가격으로 보는 프레임</div>
+        <ul>
+          <li>이 기업의 현금창출력은 어느 정도인가</li>
+          <li>현재 주가가 과도한 기대를 반영하는가</li>
+          <li>가격이 너무 싸거나 비싼 이유가 무엇인가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--green);">
+        <h4 style="color:var(--green);">10. 자본배분형</h4>
+        <div class="fw-core">실적보다 돈 쓰는 방식을 보는 프레임</div>
+        <ul>
+          <li>CAPEX / M&amp;A / 배당 / 자사주 매입·소각 / 현금 보유</li>
+          <li>고점에서 인수하고 저점에서 유증하는가</li>
+          <li>저평가 구간에서 자사주를 사는가</li>
+          <li>ROIC보다 낮은 수익률의 투자에 돈을 태우는가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--green);">
+        <h4 style="color:var(--green);">11. 진짜 현금흐름형</h4>
+        <div class="fw-core">PER보다 진짜 FCF와 owner earnings를 중시</div>
+        <ul>
+          <li>유지 CAPEX와 성장 CAPEX를 구분</li>
+          <li>회계상 이익과 실제 현금창출이 같은지</li>
+          <li>운전자본 변화가 일시적 착시인지</li>
+          <li>주식 희석이 숨어 있는지</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--green);">
+        <h4 style="color:var(--green);">12. 해자 지속성형</h4>
+        <div class="fw-core">해자가 있느냐보다, 침식되고 있느냐가 중요</div>
+        <ul>
+          <li>기술 변화가 기존 해자를 무너뜨리는가</li>
+          <li>규제 변화가 진입장벽을 낮추는가</li>
+          <li>경영진이 해자를 강화하는 투자보다 단기 실적을 택하는가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--green);">
+        <h4 style="color:var(--green);">13. 퀄리티 복리형</h4>
+        <div class="fw-core">ROIC 지속 + 재투자 활주로가 복리의 조건</div>
+        <ul>
+          <li>높은 ROIC가 일시적인지 지속 가능한지</li>
+          <li>성장할 시장이 충분한지</li>
+          <li>재투자율과 성장 활주로가 있는지</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--green);">
+        <h4 style="color:var(--green);">14. 경영자 DNA형</h4>
+        <div class="fw-core">오너십/인센티브/보상구조가 장기 성과를 좌우</div>
+        <ul>
+          <li>경영진이 운영자형인지 자본배분자형인지</li>
+          <li>오너처럼 행동하는지</li>
+          <li>자기 주식을 실제로 보유하는지</li>
+          <li>보상 구조가 TSR 연동인지 EPS 장난질 유도인지</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--green);">
+        <h4 style="color:var(--green);">15. 데이터 인프라 수혜형</h4>
+        <div class="fw-core">AI 자동화가 늘수록 데이터 인프라 수요 증가</div>
+        <ul>
+          <li>데이터 웨어하우스 수요</li>
+          <li>쿼리 엔진 사용량</li>
+          <li>권한 체계 복잡도</li>
+          <li>실시간 동기화 인프라 필요성</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--green);">
+        <h4 style="color:var(--green);">16. 성장형 부채 해석형</h4>
+        <div class="fw-core">부채=생산적 투자 신호일 수 있다</div>
+        <ul>
+          <li>적자 메우려고 빌린 건지</li>
+          <li>데이터센터/설비/용량 증설을 위해 빌린 건지</li>
+          <li>RPO/백로그/수주가 늘고 있는지</li>
+          <li>수익화 가시성이 높은지</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category C -->
+  <div class="fw-category">
+    <h3 style="color:var(--orange); border-color:var(--orange);">C. 가격/기대 철학 (3개)</h3>
+    <div class="card-grid">
+      <div class="fw-card" style="border-left:3px solid var(--orange);">
+        <h4 style="color:var(--orange);">17. 기대치 역산형</h4>
+        <div class="fw-core">주가 반영 기대치를 역산하는 프레임</div>
+        <ul>
+          <li>현재 가격이 정당화되려면 어떤 성장률/마진이 필요하나</li>
+          <li>그 기대가 현실적인가</li>
+          <li>시장 기대보다 조금이라도 더 좋아질 여지가 있나</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--orange);">
+        <h4 style="color:var(--orange);">18. 내러티브/역발상형</h4>
+        <div class="fw-core">과도한 해석의 반대편을 찾는 프레임</div>
+        <ul>
+          <li>지금 시장은 무엇을 너무 당연하게 보고 있나</li>
+          <li>왜 그 해석이 불완전한가</li>
+          <li>반대로 해석하면 어떤 투자 아이디어가 나오는가</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--orange);">
+        <h4 style="color:var(--orange);">19. 하방 방어형</h4>
+        <div class="fw-core">하락장 방어가 복리 핵심</div>
+        <ul>
+          <li>이 전략은 하락장에서 얼마나 버티나</li>
+          <li>영구 손실 가능성이 얼마나 큰가</li>
+          <li>손실 비대칭성이 얼마나 큰가</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category D -->
+  <div class="fw-category">
+    <h3 style="color:var(--purple); border-color:var(--purple);">D. 사고 체계 철학 (3개)</h3>
+    <div class="card-grid">
+      <div class="fw-card" style="border-left:3px solid var(--purple);">
+        <h4 style="color:var(--purple);">20. 프로세스·확률형</h4>
+        <div class="fw-core">기저율에서 시작해 확률을 업데이트하는 사고</div>
+        <ul>
+          <li>기저율을 먼저 보고</li>
+          <li>새 정보로 확률을 업데이트하고</li>
+          <li>항상 확률과 시나리오로 사고</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--purple);">
+        <h4 style="color:var(--purple);">21. 리스크 관리형</h4>
+        <div class="fw-core">리스크는 변동성이 아니라 영구적 자본 손실 가능성</div>
+        <ul>
+          <li>주가 변동보다 구조적 약점을 중시</li>
+          <li>과도한 기대, 과도한 레버리지 경계</li>
+          <li>틀렸을 때 회복 불가능한 손실 여부</li>
+        </ul>
+      </div>
+      <div class="fw-card" style="border-left:3px solid var(--purple);">
+        <h4 style="color:var(--purple);">22. 멘탈모델 통합형</h4>
+        <div class="fw-core">한 가지 프레임이 아니라 여러 관점을 통합</div>
+        <ul>
+          <li>심리 편향 / 인센티브 구조</li>
+          <li>기저율 / 공급 구조</li>
+          <li>네트워크 효과 / 복리</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section: Writing Principles -->
+<div id="writing" class="section">
+  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">글쓰기 원칙</h2>
+
+  <div class="card" style="margin-bottom:2rem; border-color:var(--accent);">
+    <h3 style="color:var(--accent);">블로그 정체성</h3>
+    <p style="color:var(--text); font-size:1.05rem; margin:1rem 0; font-weight:600; text-align:center;">
+      "시장의 기대 괴리를 찾아내는 역발상 투자 리서치 블로그"
+    </p>
+    <p style="color:var(--muted); text-align:center; font-size:0.9rem;">
+      애널리스트 리포트를 요약하지 않는다. 시장 컨센서스의 맹점을 파고들어<br>
+      독자가 스스로 판단할 수 있는 체크포인트를 제공한다.
+    </p>
+  </div>
+
+  <div class="grammar-box" style="margin-bottom:2rem;">
+    <div style="color:var(--muted); font-size:0.85rem; margin-bottom:0.5rem;">고정 문법 패턴 — 모든 글은 이 구조를 따른다</div>
+    <div class="grammar-flow">
+      <span>[시장 컨센서스]</span>
+      <span class="arrow">&rarr;</span>
+      <span>[해석의 맹점]</span>
+      <span class="arrow">&rarr;</span>
+      <span>[실제 메커니즘]</span>
+      <span class="arrow">&rarr;</span>
+      <span>[진짜 수혜/피해]</span>
+      <span class="arrow">&rarr;</span>
+      <span>[체크포인트]</span>
+    </div>
+  </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">10가지 글쓰기 원칙</h2>
+  <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem;">
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(88,166,255,0.15); color:var(--accent);">1</div>
+      <div class="wp-content">
+        <h4>컨센서스에서 출발하라</h4>
+        <p>모든 글은 현재 시장의 지배적 의견(컨센서스)을 먼저 정리한 뒤, 그 맹점을 지적하는 구조로 시작한다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(63,185,80,0.15); color:var(--green);">2</div>
+      <div class="wp-content">
+        <h4>주장이 아니라 메커니즘을 보여라</h4>
+        <p>"오를 것이다"가 아니라 "이런 메커니즘이 작동하면 시장 기대가 수정될 것이다"로 쓴다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(210,153,34,0.15); color:var(--yellow);">3</div>
+      <div class="wp-content">
+        <h4>숫자로 뒷받침하라</h4>
+        <p>정성적 판단에는 반드시 정량적 근거를 붙인다. 출처와 시점을 명시한다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(248,81,73,0.15); color:var(--red);">4</div>
+      <div class="wp-content">
+        <h4>철회 조건을 명시하라</h4>
+        <p>모든 투자 아이디어에는 "이 조건이 깨지면 틀린 것"이라는 철회 조건을 반드시 포함한다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(188,140,255,0.15); color:var(--purple);">5</div>
+      <div class="wp-content">
+        <h4>시간축을 고정하라</h4>
+        <p>3~12개월 중기 관점을 기본으로 하며, 글마다 투자 기간을 명시한다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(88,166,255,0.15); color:var(--accent);">6</div>
+      <div class="wp-content">
+        <h4>확신도를 등급화하라</h4>
+        <p>HIGH / MEDIUM / LOW 3단계로 확신도를 표기하고, 근거를 1줄로 요약한다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(63,185,80,0.15); color:var(--green);">7</div>
+      <div class="wp-content">
+        <h4>독자 수준을 나눠라</h4>
+        <p>본문은 중급 이상 투자자 대상, 하단에 초보자용 3줄 요약을 별도 제공한다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(210,153,34,0.15); color:var(--yellow);">8</div>
+      <div class="wp-content">
+        <h4>기존 글과 연결하라</h4>
+        <p>동일 종목의 이전 글, 관련 산업 분석, 매크로 글을 상호 링크하여 DB를 네트워크화한다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(248,81,73,0.15); color:var(--red);">9</div>
+      <div class="wp-content">
+        <h4>면책과 투명성을 지켜라</h4>
+        <p>AI 보조 사실, 필자 포지션 유무, 정보 기준일을 매 글 하단에 명시한다.</p>
+      </div>
+    </div>
+    <div class="wp-card">
+      <div class="wp-num" style="background:rgba(188,140,255,0.15); color:var(--purple);">10</div>
+      <div class="wp-content">
+        <h4>사후 검증을 게시하라</h4>
+        <p>3개월/6개월 후 예측 vs 실제를 비교하는 트랙레코드 글을 발행하여 신뢰를 축적한다.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">스타일 가이드</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3>톤</h3>
+      <ul>
+        <li><strong>전문적이되 권위적이지 않게</strong> — 애널리스트 어투가 아닌 '똑똑한 친구' 톤</li>
+        <li><strong>확신보다 논리</strong> — "~일 것이다" 대신 "~라면 ~가 된다"</li>
+        <li><strong>겸손한 자신감</strong> — 틀릴 수 있음을 인정하되 논리에는 확신</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>구조</h3>
+      <ul>
+        <li><strong>제목</strong> — [종목명] 핵심 메시지 (괴리 포인트)</li>
+        <li><strong>TL;DR</strong> — 3줄 이내 핵심 요약</li>
+        <li><strong>본문</strong> — 고정 문법 패턴 5단계</li>
+        <li><strong>결론</strong> — 확신도 + 철회조건 + 체크포인트</li>
+        <li><strong>면책</strong> — AI 보조, 포지션, 기준일</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>길이</h3>
+      <ul>
+        <li><strong>Tier 1 (심화)</strong> — 3,000~5,000자</li>
+        <li><strong>Tier 2 (업데이트)</strong> — 1,500~2,500자</li>
+        <li><strong>Tier 3 (재가공)</strong> — 800~1,200자</li>
+        <li><strong>X (1줄)</strong> — 280자 이내</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">문서 관계도</h2>
+  <p style="color:var(--muted); margin-bottom:1rem; text-align:center;">핵심 문서 4종이 서로 연결되어 글쓰기 체계를 구성한다.</p>
+  <div class="doc-relation">
+    <div class="doc-node" style="border-color:var(--accent);">
+      <h5 style="color:var(--accent);">Doc 07</h5>
+      <p>투자 철학 프레임워크</p>
+      <p style="color:var(--accent); font-size:0.7rem;">22개 해석 도구</p>
+    </div>
+    <div class="doc-connector">&harr;</div>
+    <div class="doc-node" style="border-color:var(--green);">
+      <h5 style="color:var(--green);">Doc 08</h5>
+      <p>고정 문법 패턴</p>
+      <p style="color:var(--green); font-size:0.7rem;">글의 논리 구조</p>
+    </div>
+    <div class="doc-connector">&harr;</div>
+    <div class="doc-node" style="border-color:var(--yellow);">
+      <h5 style="color:var(--yellow);">Doc 12</h5>
+      <p>글쓰기 원칙 10조</p>
+      <p style="color:var(--yellow); font-size:0.7rem;">실행 규율</p>
+    </div>
+    <div class="doc-connector">&harr;</div>
+    <div class="doc-node" style="border-color:var(--purple);">
+      <h5 style="color:var(--purple);">Doc 13</h5>
+      <p>블로그 정체성</p>
+      <p style="color:var(--purple); font-size:0.7rem;">톤 & 포지셔닝</p>
+    </div>
+  </div>
+  <div class="card" style="max-width:700px; margin:1rem auto;">
+    <p style="color:var(--muted); font-size:0.85rem; text-align:center;">
+      <strong style="color:var(--text);">Doc 07 (철학)</strong>이 해석 프레임을 제공하면 &rarr;
+      <strong style="color:var(--text);">Doc 08 (문법)</strong>이 글 구조를 잡고 &rarr;
+      <strong style="color:var(--text);">Doc 12 (원칙)</strong>이 품질을 통제하며 &rarr;
+      <strong style="color:var(--text);">Doc 13 (정체성)</strong>이 톤과 방향을 정한다.
+    </p>
   </div>
 </div>
 
@@ -557,14 +1140,17 @@
   <h2 style="margin-bottom:2rem; color:var(--accent);">단계별 로드맵</h2>
 
   <div style="display:flex; flex-direction:column; gap:1.5rem;">
-    <div class="card" style="border-left:4px solid var(--muted);">
-      <h3 style="color:var(--muted);">Phase 0 — 설계 정리 (1~2주)</h3>
+    <div class="card" style="border-left:4px solid var(--green);">
+      <h3 style="color:var(--green);">Phase 0 — 설계 정리 (1~2주) <span class="tag tag-green">진행중</span></h3>
       <p style="color:var(--muted); margin-bottom:0.8rem;">글 쓰기 전에 구조부터</p>
       <ul>
+        <li class="task-done">투자 아이디어 taxonomy 7가지 확정</li>
+        <li class="task-done">3-Layer 아키텍처 확정 (Agent Prompt / DB / System)</li>
+        <li class="task-done">투자 철학 22개 프레임워크 체계화 (A~D 4개 카테고리)</li>
+        <li class="task-done">글쓰기 원칙 10조 + 고정 문법 패턴 확립</li>
+        <li class="task-done">블로그 정체성 및 스타일 가이드 정의</li>
+        <li>초기 종목 리스트 확대 (현재 2종목 → 목표 20~30개)</li>
         <li>Google Sheets 4개 시트 완성</li>
-        <li>Notion 3개 페이지 세팅 (템플릿/원칙/SOP)</li>
-        <li>투자 아이디어 taxonomy 7가지 확정</li>
-        <li>초기 20~30개 종목 리스트 + DB 입력</li>
         <li>글 템플릿 확정 (1개 종목 실제 작성 후 수정)</li>
       </ul>
     </div>
@@ -573,7 +1159,9 @@
       <h3 style="color:var(--accent);">Phase 1 — 수동 검증 (1~2개월차)</h3>
       <p style="color:var(--muted); margin-bottom:0.8rem;">정말 될지 확인하는 단계. 돈 거의 안 씀.</p>
       <ul>
-        <li>KR 4~5개 + US 2~3개 종목 발행</li>
+        <li><strong>Q1:</strong> 첫 글 발행 가능한 최소 시스템 완성</li>
+        <li><strong>Q2:</strong> 2종목 Tier 1 글 작성 → 품질 검증</li>
+        <li>KR 4~5개 + US 2~3개 종목으로 확대</li>
         <li>주 2회 발행 (화/금)</li>
         <li>Tier 1 위주, 개별 종목 분석 100%</li>
         <li><strong>성공 기준:</strong> 6~8주 내 유입 증가 추세 확인</li>
@@ -584,6 +1172,7 @@
       <h3 style="color:var(--yellow);">Phase 2 — 반자동 운영 (3~4개월차)</h3>
       <p style="color:var(--muted); margin-bottom:0.8rem;">사람이 꼭 봐야 하는 구간만 남기고 자동화</p>
       <ul>
+        <li><strong>Q3:</strong> 데이터 파이프라인 자동화, Tier 2/3 도입</li>
         <li>종목 누적 12~15개, 산업 분석 시작</li>
         <li>n8n self-hosted 도입 (VPS ~1~2만원/월)</li>
         <li>종목 60% / 산업 25% / 경쟁사 비교 15%</li>
@@ -594,6 +1183,7 @@
       <h3 style="color:var(--green);">Phase 3 — 수익화 검증 (5~6개월차)</h3>
       <p style="color:var(--muted); margin-bottom:0.8rem;">숫자로 확인될 때만 투자 확대</p>
       <ul>
+        <li><strong>Q4:</strong> 수익 지표 확인 후 확장/피벗 결정</li>
         <li>월간 유입 추세 증가 확인</li>
         <li>기존 글 업데이트로 추가 조회 발생 확인</li>
         <li>고성과 주제 집중, 저성과 종목 제거</li>
@@ -610,6 +1200,39 @@
         <li>사람은 판단만 → 나머지는 DB + 자동화</li>
       </ul>
     </div>
+  </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">CTO 실행 계획 — 분기별 핵심 질문 & 답변</h2>
+  <div class="card" style="margin-bottom:2rem;">
+    <table>
+      <thead><tr><th>분기</th><th>핵심 질문</th><th>답변 요약</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--accent); font-weight:600;">Q1</td>
+          <td>첫 글 발행 가능한 최소 시스템은?</td>
+          <td>SQLite DB + 프롬프트 템플릿 + 수동 워크플로우</td>
+          <td><span class="tag tag-yellow">진행중</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--green); font-weight:600;">Q2</td>
+          <td>글 품질이 유료 리서치 수준인가?</td>
+          <td>2종목 실제 발행 후 피드백 → 템플릿/원칙 보정</td>
+          <td><span class="tag tag-blue">대기</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--yellow); font-weight:600;">Q3</td>
+          <td>자동화 ROI가 나오는가?</td>
+          <td>n8n 파이프라인 구축 비용 vs 시간 절감 비교</td>
+          <td><span class="tag tag-blue">대기</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--purple); font-weight:600;">Q4</td>
+          <td>확장할 것인가 피벗할 것인가?</td>
+          <td>PV, 구독자, 수익 지표 기반 Go/No-Go 판정</td>
+          <td><span class="tag tag-blue">대기</span></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">P&L 프로젝션 (기준 시나리오)</h2>
