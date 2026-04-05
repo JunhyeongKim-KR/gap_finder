@@ -269,78 +269,137 @@
 
 <!-- Section: Architecture -->
 <div id="architecture" class="section">
-  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">3-Layer 아키텍처</h2>
-  <p style="text-align:center; color:var(--muted); margin-bottom:2rem;">CEO 확인: 시스템을 3개 레이어로 분리하여 각 역할을 명확히 한다.</p>
+  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">3단계 파이프라인</h2>
+  <p style="text-align:center; color:var(--muted); margin-bottom:2rem;">크롤링 → DB 구축 → 글쓰기 → 배포. 토큰 비용은 Agent가 개입하는 2곳에서만 발생.</p>
 
-  <div class="arch-flow">
-    <div class="arch-layer" style="border-color:var(--accent); background:rgba(88,166,255,0.06); min-width:400px;">
-      <h4 style="color:var(--accent);">Layer 1: Agent Prompt (해석 엔진)</h4>
-      <p>철학(프롬프트) = 해석 엔진</p>
-      <p style="font-size:0.8rem; margin-top:0.5rem;">투자 철학 22개 프레임워크가 프롬프트에 내장되어<br>시장 데이터를 '역발상' 관점으로 해석</p>
+  <!-- Stage 1: DB 구축 -->
+  <div class="card" style="border-color:var(--green); margin-bottom:1.5rem;">
+    <h3 style="color:var(--green); margin-bottom:1rem;">1단계: DB 구축</h3>
+    <div class="arch-flow">
+      <div class="arch-layer" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+        <h4 style="color:var(--muted);">크롤링 스크립트</h4>
+        <p style="font-size:0.85rem;">API/RSS로 데이터 수집</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">scripts/collect_*.py</p>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer" style="border-color:var(--yellow); background:rgba(210,153,34,0.08);">
+        <h4 style="color:var(--yellow);">raw DB</h4>
+        <p style="font-size:0.85rem;">날것 숫자/뉴스 저장</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">삼성전자 매출 74조, PER 12.5</p>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+        <h4 style="color:var(--accent);">재해석 Agent</h4>
+        <p style="font-size:0.85rem;">철학.md 적용하여 해석·비교·맥락 부여</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/12 투자 철학 22개 프레임</p>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+        <h4 style="color:var(--green);">재해석 DB</h4>
+        <p style="font-size:0.85rem;">맥락/비교/프레임 해석 포함</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">전분기 +8%, 밴드 하단 20%</p>
+      </div>
     </div>
-    <div class="arch-arrow"></div>
-    <div class="arch-layer" style="border-color:var(--green); background:rgba(63,185,80,0.06); min-width:400px;">
-      <h4 style="color:var(--green);">Layer 2: DB (사실 데이터)</h4>
-      <p>데이터 스키마(DB) = 재료 저장</p>
-      <p style="font-size:0.8rem; margin-top:0.5rem;">시세, 재무, 매크로, 컨센서스 등<br>A~J 카테고리의 팩트 데이터를 구조화 저장</p>
-    </div>
-    <div class="arch-arrow"></div>
-    <div class="arch-layer" style="border-color:var(--purple); background:rgba(188,140,255,0.06); min-width:400px;">
-      <h4 style="color:var(--purple);">Layer 3: System (연결)</h4>
-      <p>시스템 = 연결하여 글 생성</p>
-      <p style="font-size:0.8rem; margin-top:0.5rem;">n8n 워크플로우, 크롤러, 발행 파이프라인이<br>프롬프트+DB를 조합하여 콘텐츠 생성 및 배포</p>
+    <div style="margin-top:1.2rem; padding:0.8rem; background:var(--surface); border-radius:6px;">
+      <table style="width:100%; font-size:0.85rem;">
+        <thead><tr><th style="text-align:left;">단계</th><th>하는 일</th><th>예시</th></tr></thead>
+        <tbody>
+          <tr><td>크롤링</td><td>API 호출로 수집</td><td>yfinance, Google News RSS, FRED</td></tr>
+          <tr><td>raw DB</td><td>숫자 그대로 저장</td><td>매출 74조, PER 12.5, 금리 4.5%</td></tr>
+          <tr><td style="color:var(--accent);">재해석 Agent</td><td>철학 프레임으로 해석</td><td>자본사이클형 적용 → 공급 축소 국면 판단</td></tr>
+          <tr><td>재해석 DB</td><td>해석 결과 저장</td><td>전분기 대비 +8%, 밴드 하단, 프레임 #1 적용</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:2rem; border-color:var(--accent);">
-    <h3>흐름 요약</h3>
-    <p style="color:var(--text); font-size:1rem; text-align:center; padding:1rem 0;">
-      <span style="color:var(--accent); font-weight:600;">철학(프롬프트) = 해석 엔진</span>
-      <span style="color:var(--muted);"> &rarr; </span>
-      <span style="color:var(--green); font-weight:600;">데이터 스키마(DB) = 재료 저장</span>
-      <span style="color:var(--muted);"> &rarr; </span>
-      <span style="color:var(--purple); font-weight:600;">시스템 = 연결하여 글 생성</span>
-    </p>
+  <!-- Stage 2: 글쓰기 -->
+  <div class="card" style="border-color:var(--accent); margin-bottom:1.5rem;">
+    <h3 style="color:var(--accent); margin-bottom:1rem;">2단계: 글쓰기</h3>
+    <div class="arch-flow">
+      <div class="arch-layer" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+        <h4 style="color:var(--accent);">글쓰기 Agent</h4>
+        <p style="font-size:0.85rem;">글쓰기.md + 템플릿.md 적용</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/13 + docs/07</p>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+        <h4 style="color:var(--green);">재해석 DB 읽기</h4>
+        <p style="font-size:0.85rem;">이미 해석된 데이터를 가져옴</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer" style="border-color:var(--purple); background:rgba(188,140,255,0.08);">
+        <h4 style="color:var(--purple);">글 초안 생성</h4>
+        <p style="font-size:0.85rem;">9섹션 분석글 작성</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-blue">output/</span></div>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer" style="border-color:var(--yellow); background:rgba(210,153,34,0.08);">
+        <h4 style="color:var(--yellow);">CEO 검수</h4>
+        <p style="font-size:0.85rem;">숫자·결론·판단 확인</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-yellow">사람</span></div>
+      </div>
+    </div>
+    <div style="margin-top:1rem; padding:0.6rem; background:var(--surface); border-radius:6px; text-align:center; font-size:0.85rem; color:var(--muted);">
+      글의 기본 문법: <span style="color:var(--text);">[시장 컨센서스]</span> → <span style="color:var(--text);">[해석의 맹점]</span> → <span style="color:var(--text);">[실제 메커니즘]</span> → <span style="color:var(--text);">[진짜 수혜/피해]</span> → <span style="color:var(--text);">[체크포인트]</span>
+    </div>
   </div>
 
+  <!-- Stage 3: 배포 -->
+  <div class="card" style="border-color:var(--purple); margin-bottom:2rem;">
+    <h3 style="color:var(--purple); margin-bottom:1rem;">3단계: 배포</h3>
+    <div class="arch-flow">
+      <div class="arch-layer" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+        <h4 style="color:var(--muted);">자동화 스크립트</h4>
+        <p style="font-size:0.85rem;">검수 완료된 글을 플랫폼에 발행</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+        <h4 style="color:var(--accent);">티스토리</h4>
+        <p style="font-size:0.85rem;">원문 게시 (본진)</p>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+        <h4 style="color:var(--green);">네이버 블로그</h4>
+        <p style="font-size:0.85rem;">축약 블로그체 (보조)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토큰 비용 요약 -->
+  <div class="card" style="border-color:var(--accent); margin-bottom:2rem;">
+    <h3 style="color:var(--accent); margin-bottom:1rem;">토큰 비용 — Agent가 개입하는 곳만</h3>
+    <table>
+      <thead><tr><th>단계</th><th>토큰</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>1. 크롤링</td><td><span class="tag tag-green">X</span></td><td>스크립트가 API 호출만</td></tr>
+        <tr><td style="color:var(--accent); font-weight:600;">1. 재해석 Agent</td><td><span class="tag tag-red">O</span></td><td>Agent가 데이터를 읽고 철학 프레임으로 해석</td></tr>
+        <tr><td style="color:var(--accent); font-weight:600;">2. 글쓰기 Agent</td><td><span class="tag tag-red">O</span></td><td>Agent가 재해석 DB + 글쓰기 원칙으로 글 생성</td></tr>
+        <tr><td>3. 배포</td><td><span class="tag tag-green">X</span></td><td>스크립트가 복붙만</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 데이터 카테고리 -->
   <h2 style="margin:2rem 0 1rem; color:var(--accent);">데이터 카테고리 A~J</h2>
   <div class="cat-grid">
-    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">📊</div><div style="color:var(--accent); font-weight:600;">A. 시세</div><div class="cat-label">일별 OHLCV, 시총</div></div>
-    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">💰</div><div style="color:var(--green); font-weight:600;">B. 재무</div><div class="cat-label">분기 실적, 밸류에이션</div></div>
-    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">🎯</div><div style="color:var(--yellow); font-weight:600;">C. 컨센서스</div><div class="cat-label">TP, 투자의견 분포</div></div>
-    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">📢</div><div style="color:var(--red); font-weight:600;">D. 공시</div><div class="cat-label">DART/EDGAR 공시</div></div>
-    <div class="cat-card" style="border-color:var(--purple);"><div class="cat-icon">🌐</div><div style="color:var(--purple); font-weight:600;">E. 매크로</div><div class="cat-label">금리, 환율, 유가</div></div>
-    <div class="cat-card" style="border-color:var(--orange);"><div class="cat-icon">📰</div><div style="color:var(--orange); font-weight:600;">F. 뉴스</div><div class="cat-label">종목/산업 뉴스</div></div>
-    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">🏭</div><div style="color:var(--accent); font-weight:600;">G. 산업</div><div class="cat-label">업황, 공급/수요</div></div>
-    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">🔗</div><div style="color:var(--green); font-weight:600;">H. 경쟁사</div><div class="cat-label">피어 비교 데이터</div></div>
-    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">👥</div><div style="color:var(--yellow); font-weight:600;">I. 주주</div><div class="cat-label">지분구조, 자사주</div></div>
-    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">📝</div><div style="color:var(--red); font-weight:600;">J. 콘텐츠</div><div class="cat-label">발행 이력, 성과</div></div>
-  </div>
-
-  <h2 style="margin:2rem 0 1rem; color:var(--accent);">크롤링 파이프라인 비교</h2>
-  <div class="pipeline-grid">
-    <div class="card" style="border-color:var(--accent);">
-      <h3 style="color:var(--accent);">배경지식용 크롤링</h3>
-      <p style="color:var(--muted); margin-bottom:0.8rem;">DB에 팩트를 쌓아 글의 재료로 사용</p>
-      <ul>
-        <li><strong>목적:</strong> 종목 DB 최신화</li>
-        <li><strong>주기:</strong> 일 2회 (07:00, 18:00)</li>
-        <li><strong>소스:</strong> KRX, DART, Yahoo, FRED</li>
-        <li><strong>저장:</strong> SQLite 정형 테이블</li>
-        <li><strong>활용:</strong> LLM 프롬프트에 컨텍스트로 주입</li>
-      </ul>
-    </div>
-    <div class="card" style="border-color:var(--purple);">
-      <h3 style="color:var(--purple);">모델개선용 크롤링</h3>
-      <p style="color:var(--muted); margin-bottom:0.8rem;">사후 검증으로 투자 모델 정확도 개선</p>
-      <ul>
-        <li><strong>목적:</strong> 예측 vs 실제 비교</li>
-        <li><strong>주기:</strong> 실적 발표 후 자동</li>
-        <li><strong>소스:</strong> 실적 공시, 주가 변동</li>
-        <li><strong>저장:</strong> 트랙레코드 테이블</li>
-        <li><strong>활용:</strong> 프레임워크 가중치 조정, 신뢰도 업데이트</li>
-      </ul>
-    </div>
+    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">A</div><div style="color:var(--accent); font-weight:600;">거시/국제정세</div><div class="cat-label">금리, 환율, 유가, 관세</div></div>
+    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">B</div><div style="color:var(--green); font-weight:600;">산업 구조/공급</div><div class="cat-label">CAPEX, D&amp;A, IPO, 가동률</div></div>
+    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">C</div><div style="color:var(--yellow); font-weight:600;">정책/제도</div><div class="cat-label">규제, 허가, 표준 API</div></div>
+    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">D</div><div style="color:var(--red); font-weight:600;">자원/에너지</div><div class="cat-label">우라늄, 리튬, 원전, SMR</div></div>
+    <div class="cat-card" style="border-color:var(--purple);"><div class="cat-icon">E</div><div style="color:var(--purple); font-weight:600;">기업 재무/가치</div><div class="cat-label">매출, FCF, ROIC, PER</div></div>
+    <div class="cat-card" style="border-color:var(--orange);"><div class="cat-icon">F</div><div style="color:var(--orange); font-weight:600;">경영진/자본배분</div><div class="cat-label">CEO 지분, M&amp;A, 보상구조</div></div>
+    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">G</div><div style="color:var(--accent); font-weight:600;">기대치/컨센서스</div><div class="cat-label">목표주가, EPS 추정</div></div>
+    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">H</div><div style="color:var(--green); font-weight:600;">이벤트 대응</div><div class="cat-label">시장 반응, 후속 공시</div></div>
+    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">I</div><div style="color:var(--yellow); font-weight:600;">데이터/AI 인프라</div><div class="cat-label">쿼리량, RPO, 백로그</div></div>
+    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">J</div><div style="color:var(--red); font-weight:600;">스타일/성과</div><div class="cat-label">조회수, 글 구조, 반응</div></div>
   </div>
 </div>
 
