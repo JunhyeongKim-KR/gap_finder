@@ -187,7 +187,6 @@
 <!-- Tabs -->
 <div class="tabs">
   <div class="tab active" onclick="showSection('overview')">시스템 개요</div>
-  <div class="tab" onclick="showSection('architecture')">아키텍처</div>
   <div class="tab" onclick="showSection('philosophy')">투자 철학</div>
   <div class="tab" onclick="showSection('writing')">글쓰기 원칙</div>
   <div class="tab" onclick="showSection('workflow')">워크플로우</div>
@@ -271,216 +270,6 @@
       <tr><td style="color:var(--accent); font-weight:700;">4</td><td>사람은 판단만 한다 — 데이터 정리·초안 생성·재가공은 기계</td></tr>
       <tr><td style="color:var(--accent); font-weight:700;">5</td><td>유료는 병목에만 쓴다 — '편해 보여서' 결제 금지</td></tr>
     </table>
-  </div>
-</div>
-
-<!-- Section: Architecture -->
-<div id="architecture" class="section">
-  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">4단계 파이프라인</h2>
-  <p style="text-align:center; color:var(--muted); margin-bottom:1.5rem;">크롤링 → DB 구축 → 글쓰기 → 배포. 토큰 비용은 Agent가 개입하는 2곳에서만 발생.</p>
-  <div style="display:flex; justify-content:center; gap:2rem; margin-bottom:2rem; flex-wrap:wrap;">
-    <div style="display:flex; align-items:center; gap:0.5rem;">
-      <div style="width:40px; height:24px; border:2px dashed var(--muted); border-radius:12px;"></div>
-      <span style="color:var(--muted); font-size:0.8rem;">INPUT — 데이터/파일</span>
-    </div>
-    <div style="display:flex; align-items:center; gap:0.5rem;">
-      <div style="width:40px; height:24px; border:3px solid var(--accent); border-radius:4px;"></div>
-      <span style="color:var(--muted); font-size:0.8rem;">FUNCTION — 처리/변환</span>
-    </div>
-    <div style="display:flex; align-items:center; gap:0.5rem;">
-      <div style="width:40px; height:24px; border:2px solid var(--green); border-radius:12px;"></div>
-      <span style="color:var(--muted); font-size:0.8rem;">OUTPUT — 결과물</span>
-    </div>
-  </div>
-
-  <!-- Summary overview -->
-  <div class="card" style="border-color:var(--accent); margin-bottom:2rem;">
-    <h3 style="color:var(--accent); margin-bottom:1rem;">전체 흐름</h3>
-    <div style="display:flex; flex-direction:column; gap:0.8rem;">
-      <div onclick="toggleStage('stage1')" style="cursor:pointer; display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--muted);">
-        <span style="font-size:1.2rem; font-weight:700; color:var(--muted); min-width:1.5rem;">1</span>
-        <div style="flex:1;">
-          <strong style="color:var(--text);">raw DB 크롤링</strong>
-          <span style="color:var(--muted); font-size:0.85rem;"> — 인터넷에서 데이터 수집 → 날것 DB 저장</span>
-        </div>
-        <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span>
-      </div>
-      <div onclick="toggleStage('stage2')" style="cursor:pointer; display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--accent);">
-        <span style="font-size:1.2rem; font-weight:700; color:var(--accent); min-width:1.5rem;">2</span>
-        <div style="flex:1;">
-          <strong style="color:var(--text);">DB 구축 (재해석)</strong>
-          <span style="color:var(--muted); font-size:0.85rem;"> — raw DB + 철학.md → 재해석 Agent → 재해석 DB</span>
-        </div>
-        <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span>
-      </div>
-      <div onclick="toggleStage('stage3')" style="cursor:pointer; display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--purple);">
-        <span style="font-size:1.2rem; font-weight:700; color:var(--purple); min-width:1.5rem;">3</span>
-        <div style="flex:1;">
-          <strong style="color:var(--text);">글쓰기</strong>
-          <span style="color:var(--muted); font-size:0.85rem;"> — 재해석 DB + 글쓰기.md → 글쓰기 Agent → CEO 검수</span>
-        </div>
-        <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span>
-      </div>
-      <div onclick="toggleStage('stage4')" style="cursor:pointer; display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--orange);">
-        <span style="font-size:1.2rem; font-weight:700; color:var(--orange); min-width:1.5rem;">4</span>
-        <div style="flex:1;">
-          <strong style="color:var(--text);">배포</strong>
-          <span style="color:var(--muted); font-size:0.85rem;"> — 검수된 글 → 배포 스크립트 → 티스토리 + 네이버</span>
-        </div>
-        <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stage 1: raw DB 크롤링 -->
-  <div id="stage1" class="card" style="display:none; border-color:var(--muted); margin-bottom:1.5rem;">
-    <h3 style="color:var(--muted); margin-bottom:1rem;">1단계: raw DB 크롤링 <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span></h3>
-    <div class="arch-flow">
-      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
-        <h4 style="color:var(--muted);">인터넷 데이터</h4>
-        <p style="font-size:0.85rem;">yfinance, Google News, FRED 등</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
-        <h4 style="color:var(--accent);">크롤링 스크립트</h4>
-        <p style="font-size:0.85rem;">API/RSS로 데이터 수집</p>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">scripts/collect_*.py</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
-        <h4 style="color:var(--green);">raw DB</h4>
-        <p style="font-size:0.85rem;">날것 숫자/뉴스 저장</p>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">매출 74조, PER 12.5, 금리 4.5%</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stage 2: DB 구축 (재해석) -->
-  <div id="stage2" class="card" style="display:none; border-color:var(--accent); margin-bottom:1.5rem;">
-    <h3 style="color:var(--accent); margin-bottom:1rem;">2단계: DB 구축 (재해석) <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span></h3>
-    <div class="arch-flow">
-      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
-        <h4 style="color:var(--muted);">raw DB</h4>
-        <p style="font-size:0.85rem;">1단계에서 수집한 날것 데이터</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
-        <h4 style="color:var(--muted);">철학.md</h4>
-        <p style="font-size:0.85rem;">투자 철학 22개 프레임</p>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/12</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
-        <h4 style="color:var(--accent);">재해석 Agent</h4>
-        <p style="font-size:0.85rem;">철학 프레임으로 해석·비교·맥락 부여</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
-        <h4 style="color:var(--green);">재해석 DB</h4>
-        <p style="font-size:0.85rem;">맥락/비교/프레임 해석 포함</p>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">전분기 +8%, 밴드 하단 20%, 프레임 #1</p>
-      </div>
-    </div>
-    <div style="margin-top:0.8rem; text-align:right;">
-      <a href="https://github.com/JunhyeongKim-KR/gap_finder/blob/main/docs/14_agent_reinterpret.md" style="color:var(--accent); font-size:0.8rem;">재해석 Agent 가이드 →</a>
-    </div>
-  </div>
-
-  <!-- Stage 3: 글쓰기 -->
-  <div id="stage3" class="card" style="display:none; border-color:var(--purple); margin-bottom:1.5rem;">
-    <h3 style="color:var(--purple); margin-bottom:1rem;">3단계: 글쓰기 <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span></h3>
-    <div class="arch-flow">
-      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
-        <h4 style="color:var(--muted);">재해석 DB</h4>
-        <p style="font-size:0.85rem;">이미 해석된 데이터</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
-        <h4 style="color:var(--muted);">글쓰기.md + 템플릿.md</h4>
-        <p style="font-size:0.85rem;">10대 원칙 + 9섹션 구조</p>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/13 + docs/07</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
-        <h4 style="color:var(--accent);">글쓰기 Agent</h4>
-        <p style="font-size:0.85rem;">재해석 DB + 원칙으로 분석글 작성</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
-        <h4 style="color:var(--green);">글 초안</h4>
-        <p style="font-size:0.85rem;">9섹션 분석글</p>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">output/TICKER_종목명.md</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-func" style="border-color:var(--yellow); background:rgba(210,153,34,0.08);">
-        <h4 style="color:var(--yellow);">CEO 검수</h4>
-        <p style="font-size:0.85rem;">숫자·결론·판단 확인</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-yellow">사람</span></div>
-      </div>
-    </div>
-    <div style="margin-top:1rem; padding:0.6rem; background:var(--surface); border-radius:6px; text-align:center; font-size:0.85rem; color:var(--muted);">
-      글의 기본 문법: <span style="color:var(--text);">[시장 컨센서스]</span> → <span style="color:var(--text);">[해석의 맹점]</span> → <span style="color:var(--text);">[실제 메커니즘]</span> → <span style="color:var(--text);">[진짜 수혜/피해]</span> → <span style="color:var(--text);">[체크포인트]</span>
-    </div>
-    <div style="margin-top:0.8rem; text-align:right;">
-      <a href="https://github.com/JunhyeongKim-KR/gap_finder/blob/main/docs/15_agent_writer.md" style="color:var(--accent); font-size:0.8rem;">글쓰기 Agent 가이드 →</a>
-    </div>
-  </div>
-
-  <!-- Stage 4: 배포 -->
-  <div id="stage4" class="card" style="display:none; border-color:var(--orange); margin-bottom:2rem;">
-    <h3 style="color:var(--orange); margin-bottom:1rem;">4단계: 배포 <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span></h3>
-    <div class="arch-flow">
-      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
-        <h4 style="color:var(--muted);">검수된 글</h4>
-        <p style="font-size:0.85rem;">CEO 승인 완료된 분석글</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
-        <h4 style="color:var(--accent);">배포 스크립트</h4>
-        <p style="font-size:0.85rem;">플랫폼별 포맷 변환 + 업로드</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
-        <h4 style="color:var(--green);">티스토리</h4>
-        <p style="font-size:0.85rem;">원문 게시 (본진)</p>
-      </div>
-      <div class="arch-arrow"></div>
-      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
-        <h4 style="color:var(--green);">네이버 블로그</h4>
-        <p style="font-size:0.85rem;">축약 블로그체 (보조)</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 토큰 비용 요약 -->
-  <div class="card" style="border-color:var(--accent); margin-bottom:2rem;">
-    <h3 style="color:var(--accent); margin-bottom:1rem;">토큰 비용 — Agent가 개입하는 곳만</h3>
-    <table>
-      <thead><tr><th>단계</th><th>토큰</th><th>이유</th></tr></thead>
-      <tbody>
-        <tr><td>1. raw DB 크롤링</td><td><span class="tag tag-green">X</span></td><td>스크립트가 API 호출만</td></tr>
-        <tr><td style="color:var(--accent); font-weight:600;">2. DB 구축 (재해석)</td><td><span class="tag tag-red">O</span></td><td>Agent가 데이터를 읽고 철학 프레임으로 해석</td></tr>
-        <tr><td style="color:var(--accent); font-weight:600;">3. 글쓰기</td><td><span class="tag tag-red">O</span></td><td>Agent가 재해석 DB + 글쓰기 원칙으로 글 생성</td></tr>
-        <tr><td>4. 배포</td><td><span class="tag tag-green">X</span></td><td>스크립트가 복붙만</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- 데이터 카테고리 -->
-  <h2 style="margin:2rem 0 1rem; color:var(--accent);">데이터 카테고리 A~J</h2>
-  <div class="cat-grid">
-    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">A</div><div style="color:var(--accent); font-weight:600;">거시/국제정세</div><div class="cat-label">금리, 환율, 유가, 관세</div></div>
-    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">B</div><div style="color:var(--green); font-weight:600;">산업 구조/공급</div><div class="cat-label">CAPEX, D&amp;A, IPO, 가동률</div></div>
-    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">C</div><div style="color:var(--yellow); font-weight:600;">정책/제도</div><div class="cat-label">규제, 허가, 표준 API</div></div>
-    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">D</div><div style="color:var(--red); font-weight:600;">자원/에너지</div><div class="cat-label">우라늄, 리튬, 원전, SMR</div></div>
-    <div class="cat-card" style="border-color:var(--purple);"><div class="cat-icon">E</div><div style="color:var(--purple); font-weight:600;">기업 재무/가치</div><div class="cat-label">매출, FCF, ROIC, PER</div></div>
-    <div class="cat-card" style="border-color:var(--orange);"><div class="cat-icon">F</div><div style="color:var(--orange); font-weight:600;">경영진/자본배분</div><div class="cat-label">CEO 지분, M&amp;A, 보상구조</div></div>
-    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">G</div><div style="color:var(--accent); font-weight:600;">기대치/컨센서스</div><div class="cat-label">목표주가, EPS 추정</div></div>
-    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">H</div><div style="color:var(--green); font-weight:600;">이벤트 대응</div><div class="cat-label">시장 반응, 후속 공시</div></div>
-    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">I</div><div style="color:var(--yellow); font-weight:600;">데이터/AI 인프라</div><div class="cat-label">쿼리량, RPO, 백로그</div></div>
-    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">J</div><div style="color:var(--red); font-weight:600;">스타일/성과</div><div class="cat-label">조회수, 글 구조, 반응</div></div>
   </div>
 </div>
 
@@ -921,9 +710,65 @@
 
 <!-- Section: Workflow -->
 <div id="workflow" class="section">
-  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">일간 운영 워크플로우</h2>
-  <p style="text-align:center; color:var(--muted); margin-bottom:2rem;">4단계 아키텍처가 실제로 어떤 순서로 돌아가는지. 각 단계에서 사용하는 아키텍처 구성요소를 명시.</p>
+  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">4단계 파이프라인 &mdash; 일간 워크플로우</h2>
+  <p style="text-align:center; color:var(--muted); margin-bottom:1.5rem;">크롤링 &rarr; DB 구축 &rarr; 글쓰기 &rarr; 배포. 토큰 비용은 Agent가 개입하는 2곳에서만 발생.</p>
 
+  <!-- INPUT/FUNCTION/OUTPUT 범례 -->
+  <div style="display:flex; justify-content:center; gap:2rem; margin-bottom:2rem; flex-wrap:wrap;">
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <div style="width:40px; height:24px; border:2px dashed var(--muted); border-radius:12px;"></div>
+      <span style="color:var(--muted); font-size:0.8rem;">INPUT &mdash; 데이터/파일</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <div style="width:40px; height:24px; border:3px solid var(--accent); border-radius:4px;"></div>
+      <span style="color:var(--muted); font-size:0.8rem;">FUNCTION &mdash; 처리/변환</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <div style="width:40px; height:24px; border:2px solid var(--green); border-radius:12px;"></div>
+      <span style="color:var(--muted); font-size:0.8rem;">OUTPUT &mdash; 결과물</span>
+    </div>
+  </div>
+
+  <!-- 전체 흐름 요약 -->
+  <div class="card" style="border-color:var(--accent); margin-bottom:2rem;">
+    <h3 style="color:var(--accent); margin-bottom:1rem;">전체 흐름</h3>
+    <div style="display:flex; flex-direction:column; gap:0.8rem;">
+      <div style="display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--muted);">
+        <span style="font-size:1.2rem; font-weight:700; color:var(--muted); min-width:1.5rem;">1</span>
+        <div style="flex:1;">
+          <strong style="color:var(--text);">raw DB 크롤링</strong>
+          <span style="color:var(--muted); font-size:0.85rem;"> &mdash; 인터넷에서 데이터 수집 &rarr; 날것 DB 저장</span>
+        </div>
+        <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--accent);">
+        <span style="font-size:1.2rem; font-weight:700; color:var(--accent); min-width:1.5rem;">2</span>
+        <div style="flex:1;">
+          <strong style="color:var(--text);">DB 구축 (재해석)</strong>
+          <span style="color:var(--muted); font-size:0.85rem;"> &mdash; raw DB + 철학.md &rarr; 재해석 Agent &rarr; 재해석 DB</span>
+        </div>
+        <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--purple);">
+        <span style="font-size:1.2rem; font-weight:700; color:var(--purple); min-width:1.5rem;">3</span>
+        <div style="flex:1;">
+          <strong style="color:var(--text);">글쓰기</strong>
+          <span style="color:var(--muted); font-size:0.85rem;"> &mdash; 재해석 DB + 글쓰기.md &rarr; 글쓰기 Agent &rarr; CEO 검수</span>
+        </div>
+        <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--orange);">
+        <span style="font-size:1.2rem; font-weight:700; color:var(--orange); min-width:1.5rem;">4</span>
+        <div style="flex:1;">
+          <strong style="color:var(--text);">배포</strong>
+          <span style="color:var(--muted); font-size:0.85rem;"> &mdash; 검수된 글 &rarr; 배포 스크립트 &rarr; 티스토리 + 네이버</span>
+        </div>
+        <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 워크플로우 다이어그램 -->
   <div class="workflow">
     <!-- Trigger -->
     <div class="wf-node">
@@ -954,8 +799,32 @@
       <div class="wf-arrow"></div>
       <div class="wf-node">
         <h4>③ raw DB 저장</h4>
-        <p>날것 데이터 → financials, price_daily, macro_events 갱신</p>
+        <p>날것 데이터 &rarr; financials, price_daily, macro_events 갱신</p>
         <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">db/gapfinder.db</p>
+      </div>
+      <!-- 상세 보기 -->
+      <div style="text-align:right; margin-top:0.8rem;">
+        <a onclick="toggleDetail('detail1')" style="cursor:pointer; color:var(--accent); font-size:0.8rem;">상세 보기 (INPUT/FUNCTION/OUTPUT) ▼</a>
+      </div>
+      <div id="detail1" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border);">
+        <div class="arch-flow">
+          <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+            <h4 style="color:var(--muted);">인터넷 데이터</h4>
+            <p style="font-size:0.85rem;">yfinance, Google News, FRED 등</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+            <h4 style="color:var(--accent);">크롤링 스크립트</h4>
+            <p style="font-size:0.85rem;">API/RSS로 데이터 수집</p>
+            <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">scripts/collect_*.py</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+            <h4 style="color:var(--green);">raw DB</h4>
+            <p style="font-size:0.85rem;">날것 숫자/뉴스 저장</p>
+            <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">매출 74조, PER 12.5, 금리 4.5%</p>
+          </div>
+        </div>
       </div>
     </div>
     <div class="wf-arrow"></div>
@@ -969,26 +838,58 @@
       </div>
       <div class="wf-node">
         <h4>④ 재해석 Agent 실행</h4>
-        <p>raw DB + 철학 프레임 22개 → 맥락·비교·해석 부여</p>
+        <p>raw DB + 철학 프레임 22개 &rarr; 맥락·비교·해석 부여</p>
         <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">docs/14_agent_reinterpret.md · docs/12_investment_philosophy.md</p>
       </div>
       <div class="wf-arrow"></div>
       <div class="wf-node">
         <h4>⑤ 재해석 DB 저장</h4>
-        <p>전분기 대비, 밴드 위치, 프레임 번호, 센티먼트 → DB 업데이트</p>
+        <p>전분기 대비, 밴드 위치, 프레임 번호, 센티먼트 &rarr; DB 업데이트</p>
         <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">stock_master 확장 필드 (applied_frameworks, moat_durability 등)</p>
       </div>
       <div class="wf-arrow"></div>
       <div class="wf-node">
         <h4>⑥ 업데이트 필요 종목 판별</h4>
-        <p>sensitivity=HIGH → NEEDS_UPDATE<br>실적 발표 ±3일 → 플래그 · 30일 미업데이트 → 정기 점검</p>
+        <p>sensitivity=HIGH &rarr; NEEDS_UPDATE<br>실적 발표 ±3일 &rarr; 플래그 · 30일 미업데이트 &rarr; 정기 점검</p>
+      </div>
+      <!-- 상세 보기 -->
+      <div style="text-align:right; margin-top:0.8rem;">
+        <a onclick="toggleDetail('detail2')" style="cursor:pointer; color:var(--accent); font-size:0.8rem;">상세 보기 (INPUT/FUNCTION/OUTPUT) ▼</a>
+      </div>
+      <div id="detail2" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border);">
+        <div class="arch-flow">
+          <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+            <h4 style="color:var(--muted);">raw DB</h4>
+            <p style="font-size:0.85rem;">1단계에서 수집한 날것 데이터</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+            <h4 style="color:var(--muted);">철학.md</h4>
+            <p style="font-size:0.85rem;">투자 철학 22개 프레임</p>
+            <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/12</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+            <h4 style="color:var(--accent);">재해석 Agent</h4>
+            <p style="font-size:0.85rem;">철학 프레임으로 해석·비교·맥락 부여</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+            <h4 style="color:var(--green);">재해석 DB</h4>
+            <p style="font-size:0.85rem;">맥락/비교/프레임 해석 포함</p>
+            <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">전분기 +8%, 밴드 하단 20%, 프레임 #1</p>
+          </div>
+        </div>
+        <div style="margin-top:0.8rem; text-align:right;">
+          <a href="https://github.com/JunhyeongKim-KR/gap_finder/blob/main/docs/14_agent_reinterpret.md" style="color:var(--accent); font-size:0.8rem;">재해석 Agent 가이드 &rarr;</a>
+        </div>
       </div>
     </div>
     <div class="wf-arrow"></div>
 
     <!-- Human checkpoint 1 -->
     <div class="wf-node human">
-      <h4>사람 확인 #1 — CEO</h4>
+      <h4>사람 확인 #1 &mdash; CEO</h4>
       <p>업데이트 종목 승인 / 우선순위 조정<br>재해석 결과 확인 ("이 해석 맞아?")</p>
     </div>
     <div class="wf-arrow"></div>
@@ -1017,7 +918,7 @@
       <div class="wf-arrow"></div>
       <div class="wf-node">
         <h4>⑦ 글쓰기 Agent 실행</h4>
-        <p>재해석 DB + 글쓰기 원칙 + 9섹션 템플릿 → 분석글 초안</p>
+        <p>재해석 DB + 글쓰기 원칙 + 9섹션 템플릿 &rarr; 분석글 초안</p>
         <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">docs/15_agent_writer.md · docs/13_writing_principles.md · docs/07_article_template.md</p>
       </div>
       <div class="wf-arrow"></div>
@@ -1025,12 +926,54 @@
         <h4>⑧ 초안 저장</h4>
         <p>output/TICKER_종목명_YYYYMMDD.md</p>
       </div>
+      <!-- 상세 보기 -->
+      <div style="text-align:right; margin-top:0.8rem;">
+        <a onclick="toggleDetail('detail3')" style="cursor:pointer; color:var(--accent); font-size:0.8rem;">상세 보기 (INPUT/FUNCTION/OUTPUT) ▼</a>
+      </div>
+      <div id="detail3" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border);">
+        <div class="arch-flow">
+          <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+            <h4 style="color:var(--muted);">재해석 DB</h4>
+            <p style="font-size:0.85rem;">이미 해석된 데이터</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+            <h4 style="color:var(--muted);">글쓰기.md + 템플릿.md</h4>
+            <p style="font-size:0.85rem;">10대 원칙 + 9섹션 구조</p>
+            <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/13 + docs/07</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+            <h4 style="color:var(--accent);">글쓰기 Agent</h4>
+            <p style="font-size:0.85rem;">재해석 DB + 원칙으로 분석글 작성</p>
+            <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+            <h4 style="color:var(--green);">글 초안</h4>
+            <p style="font-size:0.85rem;">9섹션 분석글</p>
+            <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">output/TICKER_종목명.md</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-func" style="border-color:var(--yellow); background:rgba(210,153,34,0.08);">
+            <h4 style="color:var(--yellow);">CEO 검수</h4>
+            <p style="font-size:0.85rem;">숫자·결론·판단 확인</p>
+            <div style="margin-top:0.5rem;"><span class="tag tag-yellow">사람</span></div>
+          </div>
+        </div>
+        <div style="margin-top:1rem; padding:0.6rem; background:var(--surface); border-radius:6px; text-align:center; font-size:0.85rem; color:var(--muted);">
+          글의 기본 문법: <span style="color:var(--text);">[시장 컨센서스]</span> &rarr; <span style="color:var(--text);">[해석의 맹점]</span> &rarr; <span style="color:var(--text);">[실제 메커니즘]</span> &rarr; <span style="color:var(--text);">[진짜 수혜/피해]</span> &rarr; <span style="color:var(--text);">[체크포인트]</span>
+        </div>
+        <div style="margin-top:0.8rem; text-align:right;">
+          <a href="https://github.com/JunhyeongKim-KR/gap_finder/blob/main/docs/15_agent_writer.md" style="color:var(--accent); font-size:0.8rem;">글쓰기 Agent 가이드 &rarr;</a>
+        </div>
+      </div>
     </div>
     <div class="wf-arrow"></div>
 
     <!-- Human checkpoint 2 -->
     <div class="wf-node human">
-      <h4>사람 확인 #2 — CEO</h4>
+      <h4>사람 확인 #2 &mdash; CEO</h4>
       <p>Tier 1/2: 숫자·결론·목표주가·철회조건 검수<br>Tier 3: 자동 통과</p>
     </div>
     <div class="wf-arrow"></div>
@@ -1044,30 +987,87 @@
       </div>
       <div class="wf-node">
         <h4>⑨ 멀티플랫폼 발행</h4>
-        <p>원문 → 티스토리 · 축약 블로그체 → 네이버<br>content_log 자동 업데이트</p>
+        <p>원문 &rarr; 티스토리 · 축약 블로그체 &rarr; 네이버<br>content_log 자동 업데이트</p>
         <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">배포 스크립트 (미구현)</p>
+      </div>
+      <!-- 상세 보기 -->
+      <div style="text-align:right; margin-top:0.8rem;">
+        <a onclick="toggleDetail('detail4')" style="cursor:pointer; color:var(--accent); font-size:0.8rem;">상세 보기 (INPUT/FUNCTION/OUTPUT) ▼</a>
+      </div>
+      <div id="detail4" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border);">
+        <div class="arch-flow">
+          <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+            <h4 style="color:var(--muted);">검수된 글</h4>
+            <p style="font-size:0.85rem;">CEO 승인 완료된 분석글</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+            <h4 style="color:var(--accent);">배포 스크립트</h4>
+            <p style="font-size:0.85rem;">플랫폼별 포맷 변환 + 업로드</p>
+            <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+            <h4 style="color:var(--green);">티스토리</h4>
+            <p style="font-size:0.85rem;">원문 게시 (본진)</p>
+          </div>
+          <div class="arch-arrow"></div>
+          <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+            <h4 style="color:var(--green);">네이버 블로그</h4>
+            <p style="font-size:0.85rem;">축약 블로그체 (보조)</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 아키텍처 매핑 테이블 -->
-  <h2 style="margin:3rem 0 1.5rem; color:var(--accent);">워크플로우 ↔ 아키텍처 매핑</h2>
+  <!-- 토큰 비용 요약 -->
+  <div class="card" style="border-color:var(--accent); margin:2rem 0;">
+    <h3 style="color:var(--accent); margin-bottom:1rem;">토큰 비용 &mdash; Agent가 개입하는 곳만</h3>
+    <table>
+      <thead><tr><th>단계</th><th>토큰</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>1. raw DB 크롤링</td><td><span class="tag tag-green">X</span></td><td>스크립트가 API 호출만</td></tr>
+        <tr><td style="color:var(--accent); font-weight:600;">2. DB 구축 (재해석)</td><td><span class="tag tag-red">O</span></td><td>Agent가 데이터를 읽고 철학 프레임으로 해석</td></tr>
+        <tr><td style="color:var(--accent); font-weight:600;">3. 글쓰기</td><td><span class="tag tag-red">O</span></td><td>Agent가 재해석 DB + 글쓰기 원칙으로 글 생성</td></tr>
+        <tr><td>4. 배포</td><td><span class="tag tag-green">X</span></td><td>스크립트가 복붙만</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 워크플로우 ↔ 구성요소 매핑 테이블 -->
+  <h2 style="margin:3rem 0 1.5rem; color:var(--accent);">워크플로우 ↔ 구성요소 매핑</h2>
   <div class="card" style="border-color:var(--accent);">
     <table>
-      <thead><tr><th>워크플로우 단계</th><th>아키텍처 단계</th><th>사용하는 구성요소</th><th>토큰</th></tr></thead>
+      <thead><tr><th>워크플로우 단계</th><th>파이프라인</th><th>사용하는 구성요소</th><th>토큰</th></tr></thead>
       <tbody>
         <tr><td>①② 데이터 수집 + 매크로 스캔</td><td style="color:var(--muted);">1단계</td><td>scripts/collect_*.py, 인터넷 API</td><td><span class="tag tag-green">X</span></td></tr>
         <tr><td>③ raw DB 저장</td><td style="color:var(--muted);">1단계</td><td>db/gapfinder.db (raw)</td><td><span class="tag tag-green">X</span></td></tr>
         <tr><td>④ 재해석 Agent</td><td style="color:var(--accent);">2단계</td><td>docs/14 + docs/12 (철학 22개)</td><td><span class="tag tag-red">O</span></td></tr>
         <tr><td>⑤ 재해석 DB 저장</td><td style="color:var(--accent);">2단계</td><td>db/gapfinder.db (재해석)</td><td><span class="tag tag-green">X</span></td></tr>
         <tr><td>⑥ 업데이트 판별</td><td style="color:var(--accent);">2단계</td><td>macro_sensitivity, article_status</td><td><span class="tag tag-green">X</span></td></tr>
-        <tr><td>CEO 확인 #1</td><td colspan="2" style="color:var(--yellow);">사람 판단 — 재해석 결과 승인</td><td><span class="tag tag-yellow">사람</span></td></tr>
+        <tr><td>CEO 확인 #1</td><td colspan="2" style="color:var(--yellow);">사람 판단 &mdash; 재해석 결과 승인</td><td><span class="tag tag-yellow">사람</span></td></tr>
         <tr><td>⑦ 글쓰기 Agent</td><td style="color:var(--purple);">3단계</td><td>docs/15 + docs/13 (원칙) + docs/07 (템플릿)</td><td><span class="tag tag-red">O</span></td></tr>
         <tr><td>⑧ 초안 저장</td><td style="color:var(--purple);">3단계</td><td>output/TICKER_종목명.md</td><td><span class="tag tag-green">X</span></td></tr>
-        <tr><td>CEO 확인 #2</td><td colspan="2" style="color:var(--yellow);">사람 판단 — 글 품질 검수</td><td><span class="tag tag-yellow">사람</span></td></tr>
+        <tr><td>CEO 확인 #2</td><td colspan="2" style="color:var(--yellow);">사람 판단 &mdash; 글 품질 검수</td><td><span class="tag tag-yellow">사람</span></td></tr>
         <tr><td>⑨ 멀티플랫폼 발행</td><td style="color:var(--orange);">4단계</td><td>배포 스크립트, content_log</td><td><span class="tag tag-green">X</span></td></tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- 데이터 카테고리 A~J -->
+  <h2 style="margin:3rem 0 1rem; color:var(--accent);">데이터 카테고리 A~J</h2>
+  <div class="cat-grid">
+    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">A</div><div style="color:var(--accent); font-weight:600;">거시/국제정세</div><div class="cat-label">금리, 환율, 유가, 관세</div></div>
+    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">B</div><div style="color:var(--green); font-weight:600;">산업 구조/공급</div><div class="cat-label">CAPEX, D&amp;A, IPO, 가동률</div></div>
+    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">C</div><div style="color:var(--yellow); font-weight:600;">정책/제도</div><div class="cat-label">규제, 허가, 표준 API</div></div>
+    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">D</div><div style="color:var(--red); font-weight:600;">자원/에너지</div><div class="cat-label">우라늄, 리튬, 원전, SMR</div></div>
+    <div class="cat-card" style="border-color:var(--purple);"><div class="cat-icon">E</div><div style="color:var(--purple); font-weight:600;">기업 재무/가치</div><div class="cat-label">매출, FCF, ROIC, PER</div></div>
+    <div class="cat-card" style="border-color:var(--orange);"><div class="cat-icon">F</div><div style="color:var(--orange); font-weight:600;">경영진/자본배분</div><div class="cat-label">CEO 지분, M&amp;A, 보상구조</div></div>
+    <div class="cat-card" style="border-color:var(--accent);"><div class="cat-icon">G</div><div style="color:var(--accent); font-weight:600;">기대치/컨센서스</div><div class="cat-label">목표주가, EPS 추정</div></div>
+    <div class="cat-card" style="border-color:var(--green);"><div class="cat-icon">H</div><div style="color:var(--green); font-weight:600;">이벤트 대응</div><div class="cat-label">시장 반응, 후속 공시</div></div>
+    <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">I</div><div style="color:var(--yellow); font-weight:600;">데이터/AI 인프라</div><div class="cat-label">쿼리량, RPO, 백로그</div></div>
+    <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">J</div><div style="color:var(--red); font-weight:600;">스타일/성과</div><div class="cat-label">조회수, 글 구조, 반응</div></div>
   </div>
 
   <!-- 자동화 경계선 -->
@@ -1474,7 +1474,7 @@
 </div>
 
 <script>
-function toggleStage(id) {
+function toggleDetail(id) {
   var el = document.getElementById(id);
   if (el.style.display === 'none') {
     el.style.display = 'block';
