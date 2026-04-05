@@ -293,9 +293,9 @@
     </div>
   </div>
 
-  <!-- Stage 1: DB 구축 -->
-  <div class="card" style="border-color:var(--green); margin-bottom:1.5rem;">
-    <h3 style="color:var(--green); margin-bottom:1rem;">1단계: DB 구축</h3>
+  <!-- Stage 1: raw DB 크롤링 -->
+  <div class="card" style="border-color:var(--muted); margin-bottom:1.5rem;">
+    <h3 style="color:var(--muted); margin-bottom:1rem;">1단계: raw DB 크롤링 <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span></h3>
     <div class="arch-flow">
       <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
         <h4 style="color:var(--muted);">인터넷 데이터</h4>
@@ -305,14 +305,24 @@
       <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
         <h4 style="color:var(--accent);">크롤링 스크립트</h4>
         <p style="font-size:0.85rem;">API/RSS로 데이터 수집</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
         <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">scripts/collect_*.py</p>
       </div>
       <div class="arch-arrow"></div>
       <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
         <h4 style="color:var(--green);">raw DB</h4>
         <p style="font-size:0.85rem;">날것 숫자/뉴스 저장</p>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">삼성전자 매출 74조, PER 12.5</p>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">매출 74조, PER 12.5, 금리 4.5%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 2: DB 구축 (재해석) -->
+  <div class="card" style="border-color:var(--accent); margin-bottom:1.5rem;">
+    <h3 style="color:var(--accent); margin-bottom:1rem;">2단계: DB 구축 (재해석) <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span></h3>
+    <div class="arch-flow">
+      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+        <h4 style="color:var(--muted);">raw DB</h4>
+        <p style="font-size:0.85rem;">1단계에서 수집한 날것 데이터</p>
       </div>
       <div class="arch-arrow"></div>
       <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
@@ -323,32 +333,20 @@
       <div class="arch-arrow"></div>
       <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
         <h4 style="color:var(--accent);">재해석 Agent</h4>
-        <p style="font-size:0.85rem;">raw DB + 철학 프레임으로 해석·비교·맥락 부여</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
+        <p style="font-size:0.85rem;">철학 프레임으로 해석·비교·맥락 부여</p>
       </div>
       <div class="arch-arrow"></div>
       <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
         <h4 style="color:var(--green);">재해석 DB</h4>
         <p style="font-size:0.85rem;">맥락/비교/프레임 해석 포함</p>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">전분기 +8%, 밴드 하단 20%</p>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">전분기 +8%, 밴드 하단 20%, 프레임 #1</p>
       </div>
-    </div>
-    <div style="margin-top:1.2rem; padding:0.8rem; background:var(--surface); border-radius:6px;">
-      <table style="width:100%; font-size:0.85rem;">
-        <thead><tr><th style="text-align:left;">단계</th><th>하는 일</th><th>예시</th></tr></thead>
-        <tbody>
-          <tr><td>크롤링</td><td>API 호출로 수집</td><td>yfinance, Google News RSS, FRED</td></tr>
-          <tr><td>raw DB</td><td>숫자 그대로 저장</td><td>매출 74조, PER 12.5, 금리 4.5%</td></tr>
-          <tr><td style="color:var(--accent);">재해석 Agent</td><td>철학 프레임으로 해석</td><td>자본사이클형 적용 → 공급 축소 국면 판단</td></tr>
-          <tr><td>재해석 DB</td><td>해석 결과 저장</td><td>전분기 대비 +8%, 밴드 하단, 프레임 #1 적용</td></tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
-  <!-- Stage 2: 글쓰기 -->
-  <div class="card" style="border-color:var(--accent); margin-bottom:1.5rem;">
-    <h3 style="color:var(--accent); margin-bottom:1rem;">2단계: 글쓰기</h3>
+  <!-- Stage 3: 글쓰기 -->
+  <div class="card" style="border-color:var(--purple); margin-bottom:1.5rem;">
+    <h3 style="color:var(--purple); margin-bottom:1rem;">3단계: 글쓰기 <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span></h3>
     <div class="arch-flow">
       <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
         <h4 style="color:var(--muted);">재해석 DB</h4>
@@ -384,9 +382,9 @@
     </div>
   </div>
 
-  <!-- Stage 3: 배포 -->
-  <div class="card" style="border-color:var(--purple); margin-bottom:2rem;">
-    <h3 style="color:var(--purple); margin-bottom:1rem;">3단계: 배포</h3>
+  <!-- Stage 4: 배포 -->
+  <div class="card" style="border-color:var(--orange); margin-bottom:2rem;">
+    <h3 style="color:var(--orange); margin-bottom:1rem;">4단계: 배포 <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span></h3>
     <div class="arch-flow">
       <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
         <h4 style="color:var(--muted);">검수된 글</h4>
@@ -417,10 +415,10 @@
     <table>
       <thead><tr><th>단계</th><th>토큰</th><th>이유</th></tr></thead>
       <tbody>
-        <tr><td>1. 크롤링</td><td><span class="tag tag-green">X</span></td><td>스크립트가 API 호출만</td></tr>
-        <tr><td style="color:var(--accent); font-weight:600;">1. 재해석 Agent</td><td><span class="tag tag-red">O</span></td><td>Agent가 데이터를 읽고 철학 프레임으로 해석</td></tr>
-        <tr><td style="color:var(--accent); font-weight:600;">2. 글쓰기 Agent</td><td><span class="tag tag-red">O</span></td><td>Agent가 재해석 DB + 글쓰기 원칙으로 글 생성</td></tr>
-        <tr><td>3. 배포</td><td><span class="tag tag-green">X</span></td><td>스크립트가 복붙만</td></tr>
+        <tr><td>1. raw DB 크롤링</td><td><span class="tag tag-green">X</span></td><td>스크립트가 API 호출만</td></tr>
+        <tr><td style="color:var(--accent); font-weight:600;">2. DB 구축 (재해석)</td><td><span class="tag tag-red">O</span></td><td>Agent가 데이터를 읽고 철학 프레임으로 해석</td></tr>
+        <tr><td style="color:var(--accent); font-weight:600;">3. 글쓰기</td><td><span class="tag tag-red">O</span></td><td>Agent가 재해석 DB + 글쓰기 원칙으로 글 생성</td></tr>
+        <tr><td>4. 배포</td><td><span class="tag tag-green">X</span></td><td>스크립트가 복붙만</td></tr>
       </tbody>
     </table>
   </div>
