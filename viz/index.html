@@ -268,6 +268,26 @@
       <tr><td style="color:var(--accent); font-weight:700;">5</td><td>유료는 병목에만 쓴다 — '편해 보여서' 결제 금지</td></tr>
     </table>
   </div>
+
+  <h2 style="margin:2rem 0 1.5rem; color:var(--accent);">상세 보기</h2>
+  <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+    <div class="card" style="border-color:var(--muted); cursor:pointer; text-align:center;" onclick="showSection('pipeline'); document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab')[1].classList.add('active');">
+      <h3 style="color:var(--muted);">1. 파이프라인</h3>
+      <p style="color:var(--muted); font-size:0.85rem;">4단계 워크플로우<br>크롤링 → 재해석 → 글쓰기 → 배포</p>
+    </div>
+    <div class="card" style="border-color:var(--accent); cursor:pointer; text-align:center;" onclick="showSection('content'); document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab')[2].classList.add('active');">
+      <h3 style="color:var(--accent);">2. 콘텐츠 규격</h3>
+      <p style="color:var(--muted); font-size:0.85rem;">투자 철학 22개 프레임<br>글쓰기 원칙 10개</p>
+    </div>
+    <div class="card" style="border-color:var(--green); cursor:pointer; text-align:center;" onclick="showSection('db'); document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab')[3].classList.add('active');">
+      <h3 style="color:var(--green);">3. DB</h3>
+      <p style="color:var(--muted); font-size:0.85rem;">8테이블 + A~J 데이터<br>SQLite 설계</p>
+    </div>
+    <div class="card" style="border-color:var(--purple); cursor:pointer; text-align:center;" onclick="showSection('operations'); document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab')[4].classList.add('active');">
+      <h3 style="color:var(--purple);">4. 운영</h3>
+      <p style="color:var(--muted); font-size:0.85rem;">플랫폼 · 비용 · 로드맵</p>
+    </div>
+  </div>
 </div>
 
 
@@ -1201,7 +1221,6 @@
       </ul>
     </div>
   </div>
-</div>
 
   <!-- 데이터 카테고리 A~J -->
   <h2 style="margin:3rem 0 1rem; color:var(--accent);">데이터 카테고리 A~J</h2>
@@ -1217,7 +1236,7 @@
     <div class="cat-card" style="border-color:var(--yellow);"><div class="cat-icon">I</div><div style="color:var(--yellow); font-weight:600;">데이터/AI 인프라</div><div class="cat-label">쿼리량, RPO, 백로그</div></div>
     <div class="cat-card" style="border-color:var(--red);"><div class="cat-icon">J</div><div style="color:var(--red); font-weight:600;">스타일/성과</div><div class="cat-label">조회수, 글 구조, 반응</div></div>
   </div>
-
+</div>
 
 <!-- Section: Operations -->
 <div id="operations" class="section">
@@ -1237,58 +1256,53 @@
 
   <div id="ops-platform" style="display:none;">
     <h2 style="margin-bottom:1.5rem; color:var(--accent);">플랫폼 전략</h2>
-  <h2 style="margin-bottom:1.5rem; color:var(--accent);">플랫폼 전략</h2>
-
-  <div class="card" style="margin-bottom:2rem;">
-    <table>
-      <thead>
-        <tr><th>기준</th><th>네이버 블로그</th><th>티스토리</th><th>브런치</th><th>서브스택</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>① 검색 유입력</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐</td><td>⭐</td></tr>
-        <tr><td>② 광고 수익화</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐</td><td>⭐⭐</td></tr>
-        <tr><td>③ 장문 적합성</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
-        <tr><td>④ 자산 축적성</td><td>⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
-        <tr><td>⑤ 자동화 연동</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
-        <tr><td>⑥ 멀티포스팅</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="card-grid">
-    <div class="card" style="border-color:var(--accent);">
-      <h3>🏠 본진: 티스토리</h3>
-      <ul>
-        <li>구글 SEO + 애드센스 수익화</li>
-        <li>장문 분석글 홈베이스</li>
-        <li>자동화 연동 최적</li>
-        <li>개인 도메인 연결 가능</li>
-      </ul>
+    <div class="card" style="margin-bottom:2rem;">
+      <table>
+        <thead>
+          <tr><th>기준</th><th>네이버 블로그</th><th>티스토리</th><th>브런치</th><th>서브스택</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>① 검색 유입력</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐</td><td>⭐</td></tr>
+          <tr><td>② 광고 수익화</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐</td><td>⭐⭐</td></tr>
+          <tr><td>③ 장문 적합성</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+          <tr><td>④ 자산 축적성</td><td>⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+          <tr><td>⑤ 자동화 연동</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+          <tr><td>⑥ 멀티포스팅</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐</td><td>⭐⭐⭐⭐</td></tr>
+        </tbody>
+      </table>
     </div>
-    <div class="card" style="border-color:var(--green);">
-      <h3>📡 보조 1: 네이버 블로그</h3>
-      <ul>
-        <li>한국 검색 유입 확보</li>
-        <li>동일 글 네이버 최적화 재가공</li>
-        <li>애드포스트 연동</li>
-        <li>초보자 눈높이 버전</li>
-      </ul>
+    <div class="card-grid">
+      <div class="card" style="border-color:var(--accent);">
+        <h3>본진: 티스토리</h3>
+        <ul>
+          <li>구글 SEO + 애드센스 수익화</li>
+          <li>장문 분석글 홈베이스</li>
+          <li>자동화 연동 최적</li>
+          <li>개인 도메인 연결 가능</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--green);">
+        <h3>보조: 네이버 블로그</h3>
+        <ul>
+          <li>한국 검색 유입 확보</li>
+          <li>동일 글 네이버 최적화 재가공</li>
+          <li>애드포스트 연동</li>
+          <li>초보자 눈높이 버전</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--purple);">
+        <h3>장기: 워드프레스 (6개월 후)</h3>
+        <ul>
+          <li>유료 전환 대비 구독자 풀</li>
+          <li>월간 요약 리포트 테스트</li>
+          <li>미국주식 영문 확장</li>
+        </ul>
+      </div>
     </div>
-    <div class="card" style="border-color:var(--purple);">
-      <h3>📬 보조 2: 서브스택 (6개월 후)</h3>
-      <ul>
-        <li>유료 전환 대비 구독자 풀</li>
-        <li>월간 요약 리포트 테스트</li>
-        <li>미국주식 영문 확장 가능</li>
-      </ul>
-    </div>
-  </div>
-</div>
   </div>
 
   <div id="ops-cost" style="display:none;">
-    <h2 style="margin-bottom:1.5rem; color:var(--accent);">토큰 & 비용</h2>
-  <h2 style="margin-bottom:1.5rem; color:var(--accent);">토큰 사용량 & 비용 추정</h2>
+    <h2 style="margin-bottom:1.5rem; color:var(--accent);">토큰 사용량 & 비용 추정</h2>
 
   <h3 style="margin-bottom:1rem; color:var(--muted);">Tier별 토큰 사용량 (1편당)</h3>
   <div class="card" style="max-width:900px; margin-bottom:2rem;">
@@ -1368,11 +1382,10 @@
       </tbody>
     </table>
   </div>
-</div>
+  </div>
 
   <div id="ops-roadmap" style="display:none;">
-    <h2 style="margin-bottom:2rem; color:var(--accent);">로드맵</h2>
-  <h2 style="margin-bottom:2rem; color:var(--accent);">단계별 로드맵</h2>
+    <h2 style="margin-bottom:2rem; color:var(--accent);">단계별 로드맵</h2>
 
   <div style="display:flex; flex-direction:column; gap:1.5rem;">
     <div class="card" style="border-left:4px solid var(--green);">
@@ -1486,6 +1499,7 @@
       </tbody>
     </table>
     <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">※ 가설적 추론. 광고 단가·PV당 수익은 플랫폼·주제·유입국가에 따라 달라짐.</p>
+  </div>
   </div>
 </div>
 
