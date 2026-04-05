@@ -115,6 +115,13 @@
   .arch-layer { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; text-align: center; position: relative; }
   .arch-layer h4 { margin-bottom: 0.3rem; font-size: 1.1rem; }
   .arch-layer p { color: var(--muted); font-size: 0.9rem; }
+  /* 노드 타입: input (둥근 모서리, 점선), function (직각, 실선 굵게), output (둥근 모서리, 실선) */
+  .node-input { border-radius: 20px; border-style: dashed; border-width: 2px; }
+  .node-input::before { content: 'INPUT'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 8px; font-size: 0.6rem; letter-spacing: 1px; color: var(--muted); font-weight: 600; }
+  .node-func { border-radius: 4px; border-width: 3px; border-style: solid; }
+  .node-func::before { content: 'FUNCTION'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 8px; font-size: 0.6rem; letter-spacing: 1px; color: var(--accent); font-weight: 600; }
+  .node-output { border-radius: 20px; border-style: solid; border-width: 2px; }
+  .node-output::before { content: 'OUTPUT'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 8px; font-size: 0.6rem; letter-spacing: 1px; color: var(--green); font-weight: 600; }
   .arch-flow { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: 2rem; }
   .arch-arrow { width: 2px; height: 28px; background: var(--border); position: relative; }
   .arch-arrow::after { content: ''; position: absolute; bottom: -4px; left: -4px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--border); }
@@ -270,37 +277,59 @@
 <!-- Section: Architecture -->
 <div id="architecture" class="section">
   <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">3단계 파이프라인</h2>
-  <p style="text-align:center; color:var(--muted); margin-bottom:2rem;">크롤링 → DB 구축 → 글쓰기 → 배포. 토큰 비용은 Agent가 개입하는 2곳에서만 발생.</p>
+  <p style="text-align:center; color:var(--muted); margin-bottom:1.5rem;">크롤링 → DB 구축 → 글쓰기 → 배포. 토큰 비용은 Agent가 개입하는 2곳에서만 발생.</p>
+  <div style="display:flex; justify-content:center; gap:2rem; margin-bottom:2rem; flex-wrap:wrap;">
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <div style="width:40px; height:24px; border:2px dashed var(--muted); border-radius:12px;"></div>
+      <span style="color:var(--muted); font-size:0.8rem;">INPUT — 데이터/파일</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <div style="width:40px; height:24px; border:3px solid var(--accent); border-radius:4px;"></div>
+      <span style="color:var(--muted); font-size:0.8rem;">FUNCTION — 처리/변환</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <div style="width:40px; height:24px; border:2px solid var(--green); border-radius:12px;"></div>
+      <span style="color:var(--muted); font-size:0.8rem;">OUTPUT — 결과물</span>
+    </div>
+  </div>
 
   <!-- Stage 1: DB 구축 -->
   <div class="card" style="border-color:var(--green); margin-bottom:1.5rem;">
     <h3 style="color:var(--green); margin-bottom:1rem;">1단계: DB 구축</h3>
     <div class="arch-flow">
-      <div class="arch-layer" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
-        <h4 style="color:var(--muted);">크롤링 스크립트</h4>
+      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+        <h4 style="color:var(--muted);">인터넷 데이터</h4>
+        <p style="font-size:0.85rem;">yfinance, Google News, FRED 등</p>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+        <h4 style="color:var(--accent);">크롤링 스크립트</h4>
         <p style="font-size:0.85rem;">API/RSS로 데이터 수집</p>
         <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
         <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">scripts/collect_*.py</p>
       </div>
       <div class="arch-arrow"></div>
-      <div class="arch-layer" style="border-color:var(--yellow); background:rgba(210,153,34,0.08);">
-        <h4 style="color:var(--yellow);">raw DB</h4>
+      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+        <h4 style="color:var(--green);">raw DB</h4>
         <p style="font-size:0.85rem;">날것 숫자/뉴스 저장</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
         <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">삼성전자 매출 74조, PER 12.5</p>
       </div>
       <div class="arch-arrow"></div>
-      <div class="arch-layer" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
-        <h4 style="color:var(--accent);">재해석 Agent</h4>
-        <p style="font-size:0.85rem;">철학.md 적용하여 해석·비교·맥락 부여</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
-        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/12 투자 철학 22개 프레임</p>
+      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+        <h4 style="color:var(--muted);">철학.md</h4>
+        <p style="font-size:0.85rem;">투자 철학 22개 프레임</p>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/12</p>
       </div>
       <div class="arch-arrow"></div>
-      <div class="arch-layer" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+      <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+        <h4 style="color:var(--accent);">재해석 Agent</h4>
+        <p style="font-size:0.85rem;">raw DB + 철학 프레임으로 해석·비교·맥락 부여</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
         <h4 style="color:var(--green);">재해석 DB</h4>
         <p style="font-size:0.85rem;">맥락/비교/프레임 해석 포함</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
         <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">전분기 +8%, 밴드 하단 20%</p>
       </div>
     </div>
@@ -321,26 +350,30 @@
   <div class="card" style="border-color:var(--accent); margin-bottom:1.5rem;">
     <h3 style="color:var(--accent); margin-bottom:1rem;">2단계: 글쓰기</h3>
     <div class="arch-flow">
-      <div class="arch-layer" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
-        <h4 style="color:var(--accent);">글쓰기 Agent</h4>
-        <p style="font-size:0.85rem;">글쓰기.md + 템플릿.md 적용</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
+      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+        <h4 style="color:var(--muted);">재해석 DB</h4>
+        <p style="font-size:0.85rem;">이미 해석된 데이터</p>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+        <h4 style="color:var(--muted);">글쓰기.md + 템플릿.md</h4>
+        <p style="font-size:0.85rem;">10대 원칙 + 9섹션 구조</p>
         <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">docs/13 + docs/07</p>
       </div>
       <div class="arch-arrow"></div>
-      <div class="arch-layer" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
-        <h4 style="color:var(--green);">재해석 DB 읽기</h4>
-        <p style="font-size:0.85rem;">이미 해석된 데이터를 가져옴</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
+      <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+        <h4 style="color:var(--accent);">글쓰기 Agent</h4>
+        <p style="font-size:0.85rem;">재해석 DB + 원칙으로 분석글 작성</p>
+        <div style="margin-top:0.5rem;"><span class="tag tag-red">토큰 O</span></div>
       </div>
       <div class="arch-arrow"></div>
-      <div class="arch-layer" style="border-color:var(--purple); background:rgba(188,140,255,0.08);">
-        <h4 style="color:var(--purple);">글 초안 생성</h4>
-        <p style="font-size:0.85rem;">9섹션 분석글 작성</p>
-        <div style="margin-top:0.5rem;"><span class="tag tag-blue">output/</span></div>
+      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+        <h4 style="color:var(--green);">글 초안</h4>
+        <p style="font-size:0.85rem;">9섹션 분석글</p>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">output/TICKER_종목명.md</p>
       </div>
       <div class="arch-arrow"></div>
-      <div class="arch-layer" style="border-color:var(--yellow); background:rgba(210,153,34,0.08);">
+      <div class="arch-layer node-func" style="border-color:var(--yellow); background:rgba(210,153,34,0.08);">
         <h4 style="color:var(--yellow);">CEO 검수</h4>
         <p style="font-size:0.85rem;">숫자·결론·판단 확인</p>
         <div style="margin-top:0.5rem;"><span class="tag tag-yellow">사람</span></div>
@@ -355,18 +388,23 @@
   <div class="card" style="border-color:var(--purple); margin-bottom:2rem;">
     <h3 style="color:var(--purple); margin-bottom:1rem;">3단계: 배포</h3>
     <div class="arch-flow">
-      <div class="arch-layer" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
-        <h4 style="color:var(--muted);">자동화 스크립트</h4>
-        <p style="font-size:0.85rem;">검수 완료된 글을 플랫폼에 발행</p>
+      <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
+        <h4 style="color:var(--muted);">검수된 글</h4>
+        <p style="font-size:0.85rem;">CEO 승인 완료된 분석글</p>
+      </div>
+      <div class="arch-arrow"></div>
+      <div class="arch-layer node-func" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
+        <h4 style="color:var(--accent);">배포 스크립트</h4>
+        <p style="font-size:0.85rem;">플랫폼별 포맷 변환 + 업로드</p>
         <div style="margin-top:0.5rem;"><span class="tag tag-green">토큰 X</span></div>
       </div>
       <div class="arch-arrow"></div>
-      <div class="arch-layer" style="border-color:var(--accent); background:rgba(88,166,255,0.08);">
-        <h4 style="color:var(--accent);">티스토리</h4>
+      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+        <h4 style="color:var(--green);">티스토리</h4>
         <p style="font-size:0.85rem;">원문 게시 (본진)</p>
       </div>
       <div class="arch-arrow"></div>
-      <div class="arch-layer" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
+      <div class="arch-layer node-output" style="border-color:var(--green); background:rgba(63,185,80,0.08);">
         <h4 style="color:var(--green);">네이버 블로그</h4>
         <p style="font-size:0.85rem;">축약 블로그체 (보조)</p>
       </div>
