@@ -61,15 +61,27 @@
 5. 목표주가는 시나리오와 가정에 따라 제시
 6. 철회조건은 '가격'이 아니라 '가설 붕괴 조건'으로 정의
 
-## 4단계 파이프라인
+## 시스템 구조 (5영역)
+
+### 파이프라인 (4단계)
 1. **raw DB 크롤링** (토큰X): scripts/collect_*.py → db/gapfinder.db
-2. **DB 구축/재해석** (토큰O): 재해석 Agent → docs/14_agent_reinterpret.md 참조
-3. **글쓰기** (토큰O): 글쓰기 Agent → docs/15_agent_writer.md 참조
+2. **DB 구축/재해석** (토큰O): docs/14_agent_reinterpret.md + docs/12
+3. **글쓰기** (토큰O): docs/15_agent_writer.md + docs/13 + docs/07
 4. **배포** (토큰X): 자동화 스크립트 → 티스토리/네이버
 
-## Agent 가이드
-- 재해석 Agent: docs/14_agent_reinterpret.md — raw DB + 철학 프레임(docs/12) → 재해석 DB
-- 글쓰기 Agent: docs/15_agent_writer.md — 재해석 DB + 글쓰기 원칙(docs/13) + 템플릿(docs/07) → 분석글
+### 콘텐츠 규격
+- 투자 철학 22개: docs/12_investment_philosophy.md
+- 글쓰기 원칙 10개: docs/13_writing_principles.md
+- 글 템플릿 9섹션: docs/07_article_template.md
+
+### DB
+- DB 설계: docs/04_database_design.md
+- 데이터 파이프라인: docs/10_data_pipeline.md
+
+### 운영
+- 플랫폼: docs/02_platform_strategy.md
+- 로드맵: docs/06_roadmap.md
+- 체크리스트: docs/09_checklist.md
 
 글의 기본 문법: [시장 컨센서스] → [해석의 맹점] → [실제 메커니즘] → [진짜 수혜/피해] → [체크포인트]
 

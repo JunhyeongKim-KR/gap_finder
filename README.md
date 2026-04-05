@@ -121,7 +121,7 @@ gap_finder/
 │   └── collect_macro.py    ← FRED 매크로 지표
 │
 └── viz/                    ← 시각화 대시보드
-    ├── index.html          ← 메인 대시보드 (9탭)
+    ├── index.html          ← 메인 대시보드 (5탭)
     └── example_workflow.html
 ```
 
@@ -129,16 +129,31 @@ gap_finder/
 
 ## 핵심 문서
 
+### 파이프라인
 | 문서 | 설명 |
 |---|---|
-| [투자 철학 프레임](docs/12_investment_philosophy.md) | 22개 해석 프레임워크 — Agent의 사고방식 |
-| [글쓰기 원칙](docs/13_writing_principles.md) | 블로그 정체성, 기본 문법, 10대 원칙 |
-| [DB 설계](docs/04_database_design.md) | 8테이블 + CEO A~J 데이터 범주 매핑 |
-| [데이터 파이프라인](docs/10_data_pipeline.md) | 크롤링 2종, 스크립트 5종, 워크플로우 |
-| [글 템플릿](docs/07_article_template.md) | 종목 분석글 9섹션 표준 구조 |
-| [재해석 Agent 가이드](docs/14_agent_reinterpret.md) | 2단계 Agent — raw DB → 철학 적용 → 재해석 DB |
-| [글쓰기 Agent 가이드](docs/15_agent_writer.md) | 3단계 Agent — 재해석 DB → 분석글 초안 |
-| [로드맵](docs/06_roadmap.md) | Phase 0~4 단계별 계획 |
+| [재해석 Agent 가이드](docs/14_agent_reinterpret.md) | 2단계 — raw DB → 철학 적용 → 재해석 DB |
+| [글쓰기 Agent 가이드](docs/15_agent_writer.md) | 3단계 — 재해석 DB → 분석글 초안 |
+
+### 콘텐츠 규격
+| 문서 | 설명 |
+|---|---|
+| [투자 철학 프레임](docs/12_investment_philosophy.md) | 22개 해석 프레임워크 |
+| [글쓰기 원칙](docs/13_writing_principles.md) | 10대 글쓰기 원칙 + 스타일 가이드 |
+| [글 템플릿](docs/07_article_template.md) | 9섹션 표준 구조 |
+
+### DB
+| 문서 | 설명 |
+|---|---|
+| [DB 설계](docs/04_database_design.md) | 8테이블 + A~J 데이터 범주 매핑 |
+| [데이터 파이프라인](docs/10_data_pipeline.md) | 크롤링 2종, 스크립트 5종 |
+
+### 운영
+| 문서 | 설명 |
+|---|---|
+| [로드맵](docs/06_roadmap.md) | Phase 0~4 계획 |
+| [매크로 업데이트](docs/05_macro_update_system.md) | 이슈 발생 시 처리 규칙 |
+| [체크리스트](docs/09_checklist.md) | 발행 전 확인 항목 |
 
 전체 문서 목록: [docs/README.md](docs/README.md)
 
