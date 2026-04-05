@@ -1,5 +1,53 @@
 # 10. 데이터 파이프라인 설계
 
+> 최종 수정: 2026-04-04
+> CEO 아키텍처 요청(20260404) 반영
+
+---
+
+## 아키텍처 원칙
+
+```
+Agent(해석 엔진) ← 프롬프트: 투자 철학 + 글쓰기 원칙 (고정)
+       ↕
+DB(사실 데이터) ← 파이프라인: 크롤링 + 정제 + 저장 (동적)  ← 이 문서의 범위
+       ↕
+시스템(연결) ← 둘을 연결해 역발상 분석형 글을 안정적으로 생산
+```
+
+이 문서는 **DB 쪽 파이프라인** --- 데이터를 어디서 가져와 어떻게 저장하는지 --- 를 다룬다.
+Agent 프롬프트 설계는 `11_agent_prompt.md`, 시스템 연결은 `12_system_integration.md` 참조.
+
+---
+
+## 크롤링 2종 분리
+
+CEO 요청(2026-04-04): 목적이 다른 크롤링을 명확히 분리한다.
+
+### Type A: 글 생성용 배경지식 크롤링 (1순위, 필수)
+
+| 항목 | 내용 |
+|------|------|
+| **목적** | 기사/공시/실적/정책/지표 수집 → Agent가 글을 쓸 때 사실 기반 재료 |
+| **상태** | 구현 진행 중 (아래 스크립트 3종 완료) |
+| **수집 대상** | 데이터 범주 A~I (아래 표 참조) |
+
+구현된 스크립트:
+- `scripts/collect_us.py` — yfinance 기반 미국주식 시세/재무/기업정보
+- `scripts/collect_news.py` — Google News RSS 종목별 뉴스 (한/영)
+- `scripts/collect_macro.py` — yfinance 기반 매크로 지표 (지수/금리/환율/원자재/VIX)
+
+### Type B: 모델 개선용 스타일 크롤링 (2순위, 장기)
+
+| 항목 | 내용 |
+|------|------|
+| **목적** | 블로그 조회수/스타일/성과 관계 학습 → Agent 글쓰기 튜닝 |
+| **상태** | 미구현 |
+| **수집 대상** | 데이터 범주 J (스타일/콘텐츠 개선) |
+| **시작점** | 자체 블로그 데이터(제목, 길이, 구조, 조회수)부터 수집 |
+
+---
+
 ## 데이터 소스
 
 ### 한국주식
@@ -28,6 +76,49 @@
 | **Google News RSS** | 종목별 뉴스 센티먼트 모니터링 |
 | **애널리스트 리포트** | 컨센서스 교차검증 (초기 수동) |
 
+### 신규 추가 예정 소스
+
+| 범주 | 필요 소스 | 현재 상태 |
+|------|-----------|-----------|
+| 컨센서스 (G) | Bloomberg 컨센서스, Refinitiv, Wisefn | 미확보 — 네이버/FnGuide 대체 검토 |
+| 경영진 데이터 (F) | 내부자 매매(DART/SEC), CEO 보상, 주주서한 | 미구현 — DART/EDGAR에서 추출 예정 |
+| 산업 CAPEX (B) | 산업별 CAPEX/D&A 통계, IPO/M&A 트래커 | 미구현 — 수작업 수집 후 자동화 검토 |
+
+---
+
+## 현재 구현된 스크립트
+
+| 스크립트 | 용도 | 주요 라이브러리 | 입력 | 출력 |
+|----------|------|-----------------|------|------|
+| `scripts/init_db.py` | DB 초기화 + 삼성전자 샘플 데이터 | sqlite3 | - | `db/gapfinder.db` |
+| `scripts/seed_nike.py` | 나이키(NKE) 샘플 데이터 삽입 | sqlite3 | - | DB 레코드 |
+| `scripts/collect_us.py` | 미국주식 시세/재무/기업정보 수집 | yfinance | 티커 (기본: NKE) | DB + `raw/yahoo/` |
+| `scripts/collect_news.py` | 종목별 뉴스 수집 (한/영) | feedparser | 검색어 | `raw/news/` |
+| `scripts/collect_macro.py` | 매크로 지표 일괄 수집 (지수/금리/환율/원자재/VIX) | yfinance | 기간 (기본: 3mo) | `raw/macro/` |
+
+---
+
+## CEO 데이터 범주 A~J → 수집 매핑
+
+CEO(2026-04-04)가 정의한 10개 카테고리별 수집 방법.
+
+| 범주 | 내용 | 수집 소스 | 수집 방식 | 현재 상태 |
+|------|------|-----------|-----------|-----------|
+| **A. 거시/국제정세** | CPI, 금리, 환율, 유가, GDP, ISM | FRED, 한은 ECOS, yfinance(매크로 프록시) | 자동 | `collect_macro.py` 구현 완료 |
+| **B. 산업 구조/공급** | CAPEX, D&A, IPO, M&A, 가동률 | DART/EDGAR 재무제표에서 추출, 수작업 보완 | 반자동 | 미구현 — 재무제표 내 CAPEX는 `collect_us.py`에서 부분 수집 |
+| **C. 정책/제도/거버넌스** | 법적 구조, 허가제, 제재사례 | 뉴스/공시 기반 수동 입력 | 수동 | 미구현 — `collect_news.py`로 탐색 후 수동 태깅 |
+| **D. 자원/에너지/광물** | 우라늄, 구리, 리튬, 원유, 금 | yfinance 선물/ETF | 자동 | `collect_macro.py`에서 원유/구리/금 수집 중 |
+| **E. 기업 재무/가치** | 매출~FCF, ROIC, WACC, 밸류에이션 | yfinance, DART, SEC EDGAR | 자동 | `collect_us.py` 구현 완료 (미국), 한국은 미구현 |
+| **F. 경영진/자본배분** | CEO 지분, 내부자 매매, 보상, 주주서한 | DART/EDGAR 공시, 수작업 | 수동 | 미구현 |
+| **G. 기대치/컨센서스** | 목표주가, 서프라이즈, 가이던스 | 네이버/FnGuide (한국), yfinance (미국) | 반자동 | yfinance info에서 forward PE 등 부분 수집 |
+| **H. 이벤트 대응** | 이벤트 → 시장 반응 → 후속 분석 | 뉴스 + 시세 교차 분석 | 반자동 | `collect_news.py` + `collect_us.py` 조합으로 수동 분석 가능 |
+| **I. 데이터/AI/클라우드** | 쿼리량, RPO, 백로그, 고객 락인 | 실적발표 자료에서 수동 추출 | 수동 | 미구현 |
+| **J. 스타일/콘텐츠 개선** | 제목, 길이, 반응, 조회수 | 자체 블로그 데이터 | 수동 | 미구현 (Type B 크롤링 대상) |
+
+**요약**: A/D/E 범주는 자동 수집 진행 중, B/G/H는 반자동(일부 자동 + 수동 보완), C/F/I/J는 수동 단계.
+
+---
+
 ## DB 저장 방식
 
 **SQLite (단일 파일)** → 6개월 후 필요 시 PostgreSQL/Baserow
@@ -35,24 +126,27 @@
 - 설치 불필요, 파일 1개 = DB 전체
 - iCloud/Git으로 백업 간단
 - Python 표준 라이브러리로 바로 사용
-- 30종목 × 수년 데이터에서 성능 문제 없음
+- 30종목 x 수년 데이터에서 성능 문제 없음
 
 ### 프로젝트 구조
 
 ```
 gapfinder/
-├── gapfinder.db          # SQLite 메인 DB
-├── raw/                  # 원본 수집 데이터 (JSON/CSV)
-│   ├── dart/
-│   ├── yahoo/
-│   ├── krx/
-│   └── macro/
-├── scripts/              # 수집·가공 스크립트
-│   ├── collect_kr.py
-│   ├── collect_us.py
-│   ├── collect_macro.py
-│   └── update_db.py
-└── output/               # 생성된 글 초안
+├── db/
+│   └── gapfinder.db          # SQLite 메인 DB
+├── raw/                      # 원본 수집 데이터 (JSON/CSV)
+│   ├── yahoo/                # collect_us.py 출력
+│   ├── news/                 # collect_news.py 출력
+│   ├── macro/                # collect_macro.py 출력
+│   ├── dart/                 # (예정)
+│   └── krx/                  # (예정)
+├── scripts/                  # 수집 스크립트
+│   ├── init_db.py            # DB 초기화 + 삼성전자 샘플
+│   ├── seed_nike.py          # 나이키 샘플 데이터
+│   ├── collect_us.py         # 미국주식 (yfinance)
+│   ├── collect_news.py       # 뉴스 (Google News RSS)
+│   └── collect_macro.py      # 매크로 지표 (yfinance)
+└── output/                   # 생성된 글 초안
 ```
 
 ## DB 용량 예측
@@ -70,6 +164,8 @@ gapfinder/
 
 ### 1년 후 100종목: ~3MB
 ### raw/ 원본 포함 총합: 300MB 이내
+
+---
 
 ## Agent 토큰 사용량
 
@@ -100,16 +196,22 @@ gapfinder/
 | Sonnet (Tier1) + Haiku (Tier2/3) 혼용 | **~$2~3** |
 | GPT-4o mini 전체 | ~$0.5 |
 
+---
+
 ## Workflow 구성
 
 ```
 DAILY TRIGGER (cron 07:00 / 18:00)
     │
-    ├── ① 데이터 수집 (Python)
-    │   KRX 시세, 네이버 컨센서스, Yahoo Finance, DART 공시
+    ├── ① 데이터 수집 — Type A: 배경지식 크롤링
+    │   ├── collect_us.py    : 미국주식 시세/재무 (yfinance)
+    │   ├── collect_macro.py : 매크로 지표 (yfinance 프록시)
+    │   ├── collect_news.py  : 종목별 뉴스 (Google News RSS)
+    │   ├── (예정) collect_kr.py : 한국주식 (DART/KRX)
+    │   └── (예정) collect_consensus.py : 컨센서스
     │
-    ├── ② 매크로 스캔 (Python)
-    │   FRED 금리, 한은 환율, 유가/원자재, Google News
+    ├── ② 매크로 이벤트 감지
+    │   금리 급변, 환율 이상, 유가 급등락 → macro_events 등록
     │
     ▼
 ③ SQLite DB 업데이트
@@ -126,8 +228,8 @@ DAILY TRIGGER (cron 07:00 / 18:00)
 [사람 확인] ← 알림 (텔레그램)
     승인 / 수정
     │
-    ├── Tier 1 (Sonnet, 사람 검수 ○)
-    ├── Tier 2 (Haiku, 사람 검수 ○)
+    ├── Tier 1 (Sonnet, 사람 검수 O)
+    ├── Tier 2 (Haiku, 사람 검수 O)
     ├── Tier 3 (Haiku, 자동 발행)
     │
     ▼
@@ -147,5 +249,16 @@ DAILY TRIGGER (cron 07:00 / 18:00)
 
 ### 사람 개입 지점 (딱 2곳)
 
-1. **종목 업데이트 승인** — 어떤 종목을 어떤 우선순위로
-2. **Tier 1/2 글 검수** — 숫자, 목표주가 가정, 철회조건, 결론
+1. **종목 업데이트 승인** --- 어떤 종목을 어떤 우선순위로
+2. **Tier 1/2 글 검수** --- 숫자, 목표주가 가정, 철회조건, 결론
+
+---
+
+## 구현 우선순위
+
+| 시기 | 항목 | 상태 |
+|------|------|------|
+| **즉시 (완료)** | DB 초기화 (`init_db.py`), 샘플 데이터 (`seed_nike.py`), 미국주식 수집 (`collect_us.py`), 뉴스 수집 (`collect_news.py`), 매크로 수집 (`collect_macro.py`) | 완료 |
+| **1개월 내** | 한국주식 수집 (`collect_kr.py` — DART/KRX), DB 정제 파이프라인 (`update_db.py`), cron 자동화, 매크로 이벤트 감지 로직 | 미구현 |
+| **2~3개월** | 컨센서스 수집 자동화, 경영진/내부자 데이터 수집, 산업 CAPEX 통계 수집, FRED API 직접 연동 (현재 yfinance 프록시) | 미구현 |
+| **장기** | Type B 스타일 크롤링 (범주 J), 블로그 성과 데이터 수집/분석, Agent 글쓰기 튜닝 피드백 루프 | 미구현 |
