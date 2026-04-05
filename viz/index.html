@@ -921,101 +921,178 @@
 
 <!-- Section: Workflow -->
 <div id="workflow" class="section">
-  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">데이터 파이프라인 워크플로우</h2>
+  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">일간 운영 워크플로우</h2>
+  <p style="text-align:center; color:var(--muted); margin-bottom:2rem;">4단계 아키텍처가 실제로 어떤 순서로 돌아가는지. 각 단계에서 사용하는 아키텍처 구성요소를 명시.</p>
 
   <div class="workflow">
+    <!-- Trigger -->
     <div class="wf-node">
       <h4>DAILY TRIGGER (cron 07:00 / 18:00)</h4>
       <p>매일 2회 자동 실행</p>
     </div>
     <div class="wf-arrow"></div>
 
-    <div style="display:flex; gap:2rem; flex-wrap:wrap; justify-content:center;">
+    <!-- Stage 1: raw DB 크롤링 -->
+    <div style="border:2px solid var(--muted); border-radius:12px; padding:1.2rem; margin-bottom:0;">
+      <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:1rem;">
+        <span style="font-size:1.1rem; font-weight:700; color:var(--muted); background:var(--surface); border:2px solid var(--muted); border-radius:50%; width:2rem; height:2rem; display:flex; align-items:center; justify-content:center;">1</span>
+        <h4 style="margin:0; color:var(--muted);">raw DB 크롤링</h4>
+        <span class="tag tag-green" style="font-size:0.65rem;">토큰 X</span>
+      </div>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center;">
+        <div class="wf-node" style="flex:1; min-width:180px;">
+          <h4>① 데이터 수집</h4>
+          <p>yfinance · Google News RSS<br>DART · KRX · 네이버</p>
+          <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">scripts/collect_us.py<br>scripts/collect_news.py</p>
+        </div>
+        <div class="wf-node" style="flex:1; min-width:180px;">
+          <h4>② 매크로 스캔</h4>
+          <p>FRED 금리 · 환율 · 유가<br>원자재 · 경기지표</p>
+          <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">scripts/collect_macro.py</p>
+        </div>
+      </div>
+      <div class="wf-arrow"></div>
       <div class="wf-node">
-        <h4>① 데이터 수집</h4>
-        <p>KRX 시세 · 네이버 컨센서스<br>Yahoo Finance · DART 공시</p>
+        <h4>③ raw DB 저장</h4>
+        <p>날것 데이터 → financials, price_daily, macro_events 갱신</p>
+        <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">db/gapfinder.db</p>
+      </div>
+    </div>
+    <div class="wf-arrow"></div>
+
+    <!-- Stage 2: DB 구축 (재해석) -->
+    <div style="border:2px solid var(--accent); border-radius:12px; padding:1.2rem; margin-bottom:0;">
+      <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:1rem;">
+        <span style="font-size:1.1rem; font-weight:700; color:var(--accent); background:var(--surface); border:2px solid var(--accent); border-radius:50%; width:2rem; height:2rem; display:flex; align-items:center; justify-content:center;">2</span>
+        <h4 style="margin:0; color:var(--accent);">DB 구축 (재해석)</h4>
+        <span class="tag tag-red" style="font-size:0.65rem;">토큰 O</span>
       </div>
       <div class="wf-node">
-        <h4>② 매크로 스캔</h4>
-        <p>FRED 금리 · 한은 환율<br>유가/원자재 · Google News</p>
+        <h4>④ 재해석 Agent 실행</h4>
+        <p>raw DB + 철학 프레임 22개 → 맥락·비교·해석 부여</p>
+        <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">docs/14_agent_reinterpret.md · docs/12_investment_philosophy.md</p>
+      </div>
+      <div class="wf-arrow"></div>
+      <div class="wf-node">
+        <h4>⑤ 재해석 DB 저장</h4>
+        <p>전분기 대비, 밴드 위치, 프레임 번호, 센티먼트 → DB 업데이트</p>
+        <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">stock_master 확장 필드 (applied_frameworks, moat_durability 등)</p>
+      </div>
+      <div class="wf-arrow"></div>
+      <div class="wf-node">
+        <h4>⑥ 업데이트 필요 종목 판별</h4>
+        <p>sensitivity=HIGH → NEEDS_UPDATE<br>실적 발표 ±3일 → 플래그 · 30일 미업데이트 → 정기 점검</p>
       </div>
     </div>
     <div class="wf-arrow"></div>
 
-    <div class="wf-node">
-      <h4>③ SQLite DB 업데이트</h4>
-      <p>raw/ → 정제 → financials, price_daily 갱신<br>매크로 이벤트 감지 → macro_events 등록</p>
-    </div>
-    <div class="wf-arrow"></div>
-
-    <div class="wf-node">
-      <h4>④ 업데이트 필요 종목 판별</h4>
-      <p>sensitivity=HIGH → NEEDS_UPDATE<br>실적 발표 ±3일 → 플래그<br>30일 미업데이트 → 정기 점검</p>
-    </div>
-    <div class="wf-arrow"></div>
-
+    <!-- Human checkpoint 1 -->
     <div class="wf-node human">
-      <h4>👤 사람 확인 #1</h4>
-      <p>업데이트 종목 승인 / 우선순위 조정<br>텔레그램 알림 → 승인</p>
+      <h4>사람 확인 #1 — CEO</h4>
+      <p>업데이트 종목 승인 / 우선순위 조정<br>재해석 결과 확인 ("이 해석 맞아?")</p>
     </div>
     <div class="wf-arrow"></div>
 
-    <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
-      <div class="wf-node" style="border-color:var(--red);">
-        <h4 style="color:var(--red);">Tier 1</h4>
-        <p>신규 심화<br>Sonnet</p>
+    <!-- Stage 3: 글쓰기 -->
+    <div style="border:2px solid var(--purple); border-radius:12px; padding:1.2rem; margin-bottom:0;">
+      <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:1rem;">
+        <span style="font-size:1.1rem; font-weight:700; color:var(--purple); background:var(--surface); border:2px solid var(--purple); border-radius:50%; width:2rem; height:2rem; display:flex; align-items:center; justify-content:center;">3</span>
+        <h4 style="margin:0; color:var(--purple);">글쓰기</h4>
+        <span class="tag tag-red" style="font-size:0.65rem;">토큰 O</span>
       </div>
-      <div class="wf-node" style="border-color:var(--yellow);">
-        <h4 style="color:var(--yellow);">Tier 2</h4>
-        <p>업데이트<br>Haiku</p>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; margin-bottom:0.5rem;">
+        <div class="wf-node" style="flex:1; min-width:120px; border-color:var(--red);">
+          <h4 style="color:var(--red);">Tier 1</h4>
+          <p>신규 심화 분석</p>
+        </div>
+        <div class="wf-node" style="flex:1; min-width:120px; border-color:var(--yellow);">
+          <h4 style="color:var(--yellow);">Tier 2</h4>
+          <p>기존 글 업데이트</p>
+        </div>
+        <div class="wf-node" style="flex:1; min-width:120px; border-color:var(--green);">
+          <h4 style="color:var(--green);">Tier 3</h4>
+          <p>플랫폼별 재가공</p>
+        </div>
       </div>
-      <div class="wf-node" style="border-color:var(--green);">
-        <h4 style="color:var(--green);">Tier 3</h4>
-        <p>재가공<br>Haiku</p>
+      <div class="wf-arrow"></div>
+      <div class="wf-node">
+        <h4>⑦ 글쓰기 Agent 실행</h4>
+        <p>재해석 DB + 글쓰기 원칙 + 9섹션 템플릿 → 분석글 초안</p>
+        <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">docs/15_agent_writer.md · docs/13_writing_principles.md · docs/07_article_template.md</p>
+      </div>
+      <div class="wf-arrow"></div>
+      <div class="wf-node">
+        <h4>⑧ 초안 저장</h4>
+        <p>output/TICKER_종목명_YYYYMMDD.md</p>
       </div>
     </div>
     <div class="wf-arrow"></div>
 
-    <div class="wf-node">
-      <h4>⑤ 콘텐츠 생성 (LLM Agent)</h4>
-      <p>DB → 시스템 프롬프트 + 템플릿 → 글 초안 → output/</p>
-    </div>
-    <div class="wf-arrow"></div>
-
+    <!-- Human checkpoint 2 -->
     <div class="wf-node human">
-      <h4>👤 사람 확인 #2</h4>
-      <p>Tier 1/2만: 숫자 정확성, 목표주가, 철회조건, 결론<br>Tier 3은 자동 통과</p>
+      <h4>사람 확인 #2 — CEO</h4>
+      <p>Tier 1/2: 숫자·결론·목표주가·철회조건 검수<br>Tier 3: 자동 통과</p>
     </div>
     <div class="wf-arrow"></div>
 
-    <div class="wf-node">
-      <h4>⑥ 멀티플랫폼 발행 (n8n)</h4>
-      <p>원문 → 티스토리 · 축약본 → 네이버 · 1줄 → X<br>content_log 자동 업데이트</p>
+    <!-- Stage 4: 배포 -->
+    <div style="border:2px solid var(--orange); border-radius:12px; padding:1.2rem; margin-bottom:0;">
+      <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:1rem;">
+        <span style="font-size:1.1rem; font-weight:700; color:var(--orange); background:var(--surface); border:2px solid var(--orange); border-radius:50%; width:2rem; height:2rem; display:flex; align-items:center; justify-content:center;">4</span>
+        <h4 style="margin:0; color:var(--orange);">배포</h4>
+        <span class="tag tag-green" style="font-size:0.65rem;">토큰 X</span>
+      </div>
+      <div class="wf-node">
+        <h4>⑨ 멀티플랫폼 발행</h4>
+        <p>원문 → 티스토리 · 축약 블로그체 → 네이버<br>content_log 자동 업데이트</p>
+        <p style="font-size:0.7rem; color:var(--accent); margin-top:0.3rem;">배포 스크립트 (미구현)</p>
+      </div>
     </div>
   </div>
 
+  <!-- 아키텍처 매핑 테이블 -->
+  <h2 style="margin:3rem 0 1.5rem; color:var(--accent);">워크플로우 ↔ 아키텍처 매핑</h2>
+  <div class="card" style="border-color:var(--accent);">
+    <table>
+      <thead><tr><th>워크플로우 단계</th><th>아키텍처 단계</th><th>사용하는 구성요소</th><th>토큰</th></tr></thead>
+      <tbody>
+        <tr><td>①② 데이터 수집 + 매크로 스캔</td><td style="color:var(--muted);">1단계</td><td>scripts/collect_*.py, 인터넷 API</td><td><span class="tag tag-green">X</span></td></tr>
+        <tr><td>③ raw DB 저장</td><td style="color:var(--muted);">1단계</td><td>db/gapfinder.db (raw)</td><td><span class="tag tag-green">X</span></td></tr>
+        <tr><td>④ 재해석 Agent</td><td style="color:var(--accent);">2단계</td><td>docs/14 + docs/12 (철학 22개)</td><td><span class="tag tag-red">O</span></td></tr>
+        <tr><td>⑤ 재해석 DB 저장</td><td style="color:var(--accent);">2단계</td><td>db/gapfinder.db (재해석)</td><td><span class="tag tag-green">X</span></td></tr>
+        <tr><td>⑥ 업데이트 판별</td><td style="color:var(--accent);">2단계</td><td>macro_sensitivity, article_status</td><td><span class="tag tag-green">X</span></td></tr>
+        <tr><td>CEO 확인 #1</td><td colspan="2" style="color:var(--yellow);">사람 판단 — 재해석 결과 승인</td><td><span class="tag tag-yellow">사람</span></td></tr>
+        <tr><td>⑦ 글쓰기 Agent</td><td style="color:var(--purple);">3단계</td><td>docs/15 + docs/13 (원칙) + docs/07 (템플릿)</td><td><span class="tag tag-red">O</span></td></tr>
+        <tr><td>⑧ 초안 저장</td><td style="color:var(--purple);">3단계</td><td>output/TICKER_종목명.md</td><td><span class="tag tag-green">X</span></td></tr>
+        <tr><td>CEO 확인 #2</td><td colspan="2" style="color:var(--yellow);">사람 판단 — 글 품질 검수</td><td><span class="tag tag-yellow">사람</span></td></tr>
+        <tr><td>⑨ 멀티플랫폼 발행</td><td style="color:var(--orange);">4단계</td><td>배포 스크립트, content_log</td><td><span class="tag tag-green">X</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 자동화 경계선 -->
   <h2 style="margin:3rem 0 1.5rem; color:var(--accent);">자동화 경계선</h2>
   <div class="compare-grid">
     <div class="compare-col" style="border-color:var(--green);">
-      <h3 style="color:var(--green);">✅ 자동화 OK</h3>
+      <h3 style="color:var(--green);">자동화 OK</h3>
       <ul>
-        <li>제목 초안 생성 (LLM 3안)</li>
-        <li>초보자 3줄 요약 자동 변환</li>
-        <li>티스토리 → 네이버 문안 분리</li>
-        <li>DB 발행 상태 자동 업데이트</li>
-        <li>매크로 이슈 발생 시 종목 자동 태깅</li>
-        <li>시세/재무 데이터 수집</li>
+        <li>시세/재무/매크로 데이터 수집 <span style="color:var(--muted); font-size:0.75rem;">(1단계)</span></li>
+        <li>전분기 대비·밴드 위치 계산 <span style="color:var(--muted); font-size:0.75rem;">(2단계)</span></li>
+        <li>뉴스 센티먼트 요약 <span style="color:var(--muted); font-size:0.75rem;">(2단계)</span></li>
+        <li>글 초안 생성 <span style="color:var(--muted); font-size:0.75rem;">(3단계)</span></li>
+        <li>티스토리→네이버 포맷 변환 <span style="color:var(--muted); font-size:0.75rem;">(4단계)</span></li>
+        <li>DB 발행 상태 업데이트 <span style="color:var(--muted); font-size:0.75rem;">(4단계)</span></li>
       </ul>
     </div>
     <div class="compare-col" style="border-color:var(--red);">
-      <h3 style="color:var(--red);">🚫 자동화 금지</h3>
+      <h3 style="color:var(--red);">자동화 금지 (사람만)</h3>
       <ul>
-        <li>숫자 출처 확인 및 적정성</li>
-        <li>목표주가 가정 적정성</li>
-        <li>투자 논리의 내적 일관성</li>
-        <li>최종 결론 문장</li>
-        <li>철회조건 정의</li>
-        <li>종목 선정 / 투자 가설 수립</li>
+        <li>종목 선정 / 투자 가설 수립 <span style="color:var(--muted); font-size:0.75rem;">(CEO)</span></li>
+        <li>재해석 결과 승인 <span style="color:var(--muted); font-size:0.75rem;">(확인 #1)</span></li>
+        <li>목표주가 가정 적정성 <span style="color:var(--muted); font-size:0.75rem;">(확인 #2)</span></li>
+        <li>최종 결론 문장 확정 <span style="color:var(--muted); font-size:0.75rem;">(확인 #2)</span></li>
+        <li>철회조건 정의 <span style="color:var(--muted); font-size:0.75rem;">(확인 #2)</span></li>
+        <li>숫자 출처 확인 <span style="color:var(--muted); font-size:0.75rem;">(확인 #2)</span></li>
       </ul>
     </div>
   </div>
