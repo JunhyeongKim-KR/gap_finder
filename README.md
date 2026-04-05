@@ -136,6 +136,8 @@ gap_finder/
 | [DB 설계](docs/04_database_design.md) | 8테이블 + CEO A~J 데이터 범주 매핑 |
 | [데이터 파이프라인](docs/10_data_pipeline.md) | 크롤링 2종, 스크립트 5종, 워크플로우 |
 | [글 템플릿](docs/07_article_template.md) | 종목 분석글 9섹션 표준 구조 |
+| [재해석 Agent 가이드](docs/14_agent_reinterpret.md) | 2단계 Agent — raw DB → 철학 적용 → 재해석 DB |
+| [글쓰기 Agent 가이드](docs/15_agent_writer.md) | 3단계 Agent — 재해석 DB → 분석글 초안 |
 | [로드맵](docs/06_roadmap.md) | Phase 0~4 단계별 계획 |
 
 전체 문서 목록: [docs/README.md](docs/README.md)

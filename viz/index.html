@@ -276,7 +276,7 @@
 
 <!-- Section: Architecture -->
 <div id="architecture" class="section">
-  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">3단계 파이프라인</h2>
+  <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">4단계 파이프라인</h2>
   <p style="text-align:center; color:var(--muted); margin-bottom:1.5rem;">크롤링 → DB 구축 → 글쓰기 → 배포. 토큰 비용은 Agent가 개입하는 2곳에서만 발생.</p>
   <div style="display:flex; justify-content:center; gap:2rem; margin-bottom:2rem; flex-wrap:wrap;">
     <div style="display:flex; align-items:center; gap:0.5rem;">
@@ -293,8 +293,47 @@
     </div>
   </div>
 
+  <!-- Summary overview -->
+  <div class="card" style="border-color:var(--accent); margin-bottom:2rem;">
+    <h3 style="color:var(--accent); margin-bottom:1rem;">전체 흐름</h3>
+    <div style="display:flex; flex-direction:column; gap:0.8rem;">
+      <div onclick="toggleStage('stage1')" style="cursor:pointer; display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--muted);">
+        <span style="font-size:1.2rem; font-weight:700; color:var(--muted); min-width:1.5rem;">1</span>
+        <div style="flex:1;">
+          <strong style="color:var(--text);">raw DB 크롤링</strong>
+          <span style="color:var(--muted); font-size:0.85rem;"> — 인터넷에서 데이터 수집 → 날것 DB 저장</span>
+        </div>
+        <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span>
+      </div>
+      <div onclick="toggleStage('stage2')" style="cursor:pointer; display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--accent);">
+        <span style="font-size:1.2rem; font-weight:700; color:var(--accent); min-width:1.5rem;">2</span>
+        <div style="flex:1;">
+          <strong style="color:var(--text);">DB 구축 (재해석)</strong>
+          <span style="color:var(--muted); font-size:0.85rem;"> — raw DB + 철학.md → 재해석 Agent → 재해석 DB</span>
+        </div>
+        <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span>
+      </div>
+      <div onclick="toggleStage('stage3')" style="cursor:pointer; display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--purple);">
+        <span style="font-size:1.2rem; font-weight:700; color:var(--purple); min-width:1.5rem;">3</span>
+        <div style="flex:1;">
+          <strong style="color:var(--text);">글쓰기</strong>
+          <span style="color:var(--muted); font-size:0.85rem;"> — 재해석 DB + 글쓰기.md → 글쓰기 Agent → CEO 검수</span>
+        </div>
+        <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span>
+      </div>
+      <div onclick="toggleStage('stage4')" style="cursor:pointer; display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--orange);">
+        <span style="font-size:1.2rem; font-weight:700; color:var(--orange); min-width:1.5rem;">4</span>
+        <div style="flex:1;">
+          <strong style="color:var(--text);">배포</strong>
+          <span style="color:var(--muted); font-size:0.85rem;"> — 검수된 글 → 배포 스크립트 → 티스토리 + 네이버</span>
+        </div>
+        <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Stage 1: raw DB 크롤링 -->
-  <div class="card" style="border-color:var(--muted); margin-bottom:1.5rem;">
+  <div id="stage1" class="card" style="display:none; border-color:var(--muted); margin-bottom:1.5rem;">
     <h3 style="color:var(--muted); margin-bottom:1rem;">1단계: raw DB 크롤링 <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span></h3>
     <div class="arch-flow">
       <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
@@ -317,7 +356,7 @@
   </div>
 
   <!-- Stage 2: DB 구축 (재해석) -->
-  <div class="card" style="border-color:var(--accent); margin-bottom:1.5rem;">
+  <div id="stage2" class="card" style="display:none; border-color:var(--accent); margin-bottom:1.5rem;">
     <h3 style="color:var(--accent); margin-bottom:1rem;">2단계: DB 구축 (재해석) <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span></h3>
     <div class="arch-flow">
       <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
@@ -342,10 +381,13 @@
         <p style="font-size:0.75rem; color:var(--muted); margin-top:0.3rem;">전분기 +8%, 밴드 하단 20%, 프레임 #1</p>
       </div>
     </div>
+    <div style="margin-top:0.8rem; text-align:right;">
+      <a href="https://github.com/JunhyeongKim-KR/gap_finder/blob/main/docs/14_agent_reinterpret.md" style="color:var(--accent); font-size:0.8rem;">재해석 Agent 가이드 →</a>
+    </div>
   </div>
 
   <!-- Stage 3: 글쓰기 -->
-  <div class="card" style="border-color:var(--purple); margin-bottom:1.5rem;">
+  <div id="stage3" class="card" style="display:none; border-color:var(--purple); margin-bottom:1.5rem;">
     <h3 style="color:var(--purple); margin-bottom:1rem;">3단계: 글쓰기 <span class="tag tag-red" style="font-size:0.7rem;">토큰 O</span></h3>
     <div class="arch-flow">
       <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
@@ -380,10 +422,13 @@
     <div style="margin-top:1rem; padding:0.6rem; background:var(--surface); border-radius:6px; text-align:center; font-size:0.85rem; color:var(--muted);">
       글의 기본 문법: <span style="color:var(--text);">[시장 컨센서스]</span> → <span style="color:var(--text);">[해석의 맹점]</span> → <span style="color:var(--text);">[실제 메커니즘]</span> → <span style="color:var(--text);">[진짜 수혜/피해]</span> → <span style="color:var(--text);">[체크포인트]</span>
     </div>
+    <div style="margin-top:0.8rem; text-align:right;">
+      <a href="https://github.com/JunhyeongKim-KR/gap_finder/blob/main/docs/15_agent_writer.md" style="color:var(--accent); font-size:0.8rem;">글쓰기 Agent 가이드 →</a>
+    </div>
   </div>
 
   <!-- Stage 4: 배포 -->
-  <div class="card" style="border-color:var(--orange); margin-bottom:2rem;">
+  <div id="stage4" class="card" style="display:none; border-color:var(--orange); margin-bottom:2rem;">
     <h3 style="color:var(--orange); margin-bottom:1rem;">4단계: 배포 <span class="tag tag-green" style="font-size:0.7rem;">토큰 X</span></h3>
     <div class="arch-flow">
       <div class="arch-layer node-input" style="border-color:var(--muted); background:rgba(139,148,158,0.08);">
@@ -1352,6 +1397,15 @@
 </div>
 
 <script>
+function toggleStage(id) {
+  var el = document.getElementById(id);
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));

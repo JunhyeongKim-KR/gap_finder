@@ -19,6 +19,8 @@
 | 10 | [데이터 파이프라인](10_data_pipeline.md) | 크롤링 2종 분리, 스크립트 5종, A~J 수집 매핑 | 04-05 개편 |
 | 12 | [투자 철학 프레임](12_investment_philosophy.md) | Agent 해석 엔진 — 22개 투자 철학 프레임워크 | 04-04 신규 |
 | 13 | [글쓰기 원칙](13_writing_principles.md) | Agent 표현 규칙 — 글의 정체성, 문법, 10대 원칙 | 04-04 신규 |
+| 14 | [재해석 Agent 가이드](14_agent_reinterpret.md) | 2단계 Agent — raw DB → 철학 프레임 적용 → 재해석 DB | 04-05 신규 |
+| 15 | [글쓰기 Agent 가이드](15_agent_writer.md) | 3단계 Agent — 재해석 DB → 글쓰기 원칙 → 분석글 초안 | 04-05 신규 |
 
 ### 삭제됨 (통합 완료)
 
