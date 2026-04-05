@@ -1,3 +1,4 @@
+# DEPRECATED: 이 스크립트는 통합 스크립트로 대체되었습니다.
 #!/usr/bin/env python3
 """
 FRED API 크롤러 — raw.db macro_indicators 테이블에 저장

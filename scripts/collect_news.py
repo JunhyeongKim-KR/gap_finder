@@ -1,3 +1,4 @@
+# DEPRECATED: 이 스크립트는 통합 스크립트로 대체되었습니다.
 #!/usr/bin/env python3
 """종목별 뉴스 수집 — Google News RSS (API 키 불필요).
 
