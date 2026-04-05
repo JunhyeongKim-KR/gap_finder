@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# DEPRECATED: 이 스크립트는 더 이상 사용되지 않습니다. init_raw_db.py / init_enriched_db.py를 사용하세요.
 """GapFinder SQLite DB 초기화 스크립트.
 
 docs/04_database_design.md 기준으로 5개 테이블을 생성한다.

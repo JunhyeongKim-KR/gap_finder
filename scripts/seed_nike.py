@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# DEPRECATED: 이 스크립트는 더 이상 사용되지 않습니다. init_raw_db.py / init_enriched_db.py를 사용하세요.
 """Nike(NKE) 종목 데이터를 gapfinder.db에 추가한다."""
 
 import sqlite3

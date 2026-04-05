@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 
 import yfinance as yf
 
-DB_PATH = Path(__file__).resolve().parent.parent / "db" / "gapfinder.db"
+DB_PATH = Path(__file__).resolve().parent.parent / "db" / "raw.db"
 RAW_DIR = Path(__file__).resolve().parent.parent / "raw" / "yahoo"
 
 
