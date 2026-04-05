@@ -1241,18 +1241,18 @@
   <h2 style="margin-bottom:2rem; color:var(--accent); text-align:center;">운영</h2>
 
   <div style="display:flex; flex-direction:column; gap:0.8rem; margin-bottom:2rem;">
-    <div onclick="toggleDetail('ops-platform')" style="cursor:pointer; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--accent);">
+    <div onclick="toggleOps('ops-platform')" style="cursor:pointer; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--accent);">
       <strong>플랫폼 전략</strong> <span style="color:var(--muted); font-size:0.85rem;">— 티스토리 본진, 네이버 보조, 워드프레스 장기</span>
     </div>
-    <div onclick="toggleDetail('ops-cost')" style="cursor:pointer; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--green);">
+    <div onclick="toggleOps('ops-cost')" style="cursor:pointer; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--green);">
       <strong>토큰 & 비용</strong> <span style="color:var(--muted); font-size:0.85rem;">— Agent 토큰 사용량, 월간 비용 추정</span>
     </div>
-    <div onclick="toggleDetail('ops-roadmap')" style="cursor:pointer; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--purple);">
+    <div onclick="toggleOps('ops-roadmap')" style="cursor:pointer; padding:0.8rem; background:var(--surface); border-radius:8px; border-left:4px solid var(--purple);">
       <strong>로드맵</strong> <span style="color:var(--muted); font-size:0.85rem;">— Phase 0~4 단계별 계획</span>
     </div>
   </div>
 
-  <div id="ops-platform" style="display:block;">
+  <div id="ops-platform" style="display:none;">
     <h2 style="margin-bottom:1.5rem; color:var(--accent);">플랫폼 전략</h2>
     <div class="card" style="margin-bottom:2rem;">
       <table>
@@ -1511,6 +1511,13 @@ function toggleDetail(id) {
   } else {
     el.style.display = 'none';
   }
+}
+function toggleOps(id) {
+  var ids = ['ops-platform', 'ops-cost', 'ops-roadmap'];
+  ids.forEach(function(oid) {
+    var el = document.getElementById(oid);
+    if (el) el.style.display = (oid === id && el.style.display === 'none') ? 'block' : 'none';
+  });
 }
 
 function showSection(id) {
