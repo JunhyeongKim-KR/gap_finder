@@ -27,7 +27,7 @@ from pathlib import Path
 
 from load_env import get_key
 
-DB_PATH = Path(__file__).resolve().parent.parent / 'db' / 'raw.db'
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "db" / 'raw.db'
 
 # 기본 대상 국가 코드 (관세청 2자리 코드)
 DEFAULT_COUNTRIES = ['US', 'CN', 'JP', 'EU']

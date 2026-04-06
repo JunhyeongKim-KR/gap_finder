@@ -84,85 +84,67 @@ raw DB + 철학.md  →  재해석 Agent  →  재해석 DB
 ```
 gap_finder/
 │
-├── board/                  ← CEO·CTO 소통 공간
-│   ├── requests/           ← 요청사항 (CEO → CTO)
-│   ├── decisions/          ← 확정된 결정사항
-│   └── reviews/            ← 글 리뷰·피드백
+├── agents/                     ← 4단계 파이프라인
+│   ├── crawler/                ← 1단계: 크롤링 스크립트
+│   │   ├── collect_stocks.py   ← yfinance + DART + KRX
+│   │   ├── collect_macro.py    ← FRED + ECOS + BLS
+│   │   ├── collect_events.py   ← News + DART공시 + SEC
+│   │   ├── collect_energy.py   ← EIA
+│   │   ├── collect_trade.py    ← 관세청
+│   │   ├── init_raw_db.py      ← raw.db 초기화
+│   │   ├── init_enriched_db.py ← enriched.db 초기화
+│   │   ├── load_env.py         ← API 키 로드
+│   │   └── setup_keys.py       ← API 키 설정
+│   ├── reinterpret/            ← 2단계: 재해석 Agent
+│   │   ├── PROMPT.md
+│   │   └── philosophy.md       ← 투자 철학 22개
+│   └── writer/                 ← 3단계: 글쓰기 Agent
+│       ├── PROMPT.md
+│       ├── writing.md          ← 글쓰기 12원칙 + 4패턴
+│       └── template.md         ← 글 템플릿 (참조용)
 │
-├── agents/                 ← AI Agent 전용 프롬프트
-│   ├── reinterpret/        ← 2단계: 재해석 Agent
-│   │   ├── PROMPT.md       ← 역할, 규칙, 입출력
-│   │   └── philosophy.md   ← 투자 철학 22개 프레임
-│   └── writer/             ← 3단계: 글쓰기 Agent
-│       ├── PROMPT.md       ← 역할, 규칙, 입출력
-│       └── writing.md      ← 글쓰기 원칙 12개 + 4패턴
+├── board/                      ← CEO·CTO 소통 (인큐베이터)
+│   ├── requests/               ← CEO 요청 → CTO 검토
+│   ├── decisions/
+│   └── reviews/
 │
-├── docs/                   ← 전략 문서 (원본 보관)
-│   ├── 01  사업성 평가
-│   ├── 02  플랫폼 전략
-│   ├── 04  DB 설계 (8테이블, A~J 데이터 범주)
-│   ├── 05  매크로 업데이트 체계
-│   ├── 06  로드맵 (Phase 0~4)
-│   ├── 07  글 템플릿 (참조용)
-│   ├── 09  체크리스트
-│   ├── 10  데이터 파이프라인
-│   ├── 12  투자 철학 프레임 (원본)
-│   ├── 13  글쓰기 원칙 (원본)
-│   └── 16  크롤링 스크립트 구조
+├── docs/                       ← 확정 전략 (졸업 전 보관)
+│   ├── 01 사업성 평가
+│   ├── 02 플랫폼 전략
+│   ├── 05 매크로 업데이트
+│   ├── 06 로드맵
+│   ├── 09 체크리스트
+│   └── 10 데이터 파이프라인
 │
-├── output/                 ← 생성된 분석글
+├── db/                         ← SQLite 데이터베이스
+│   ├── raw.db                  ← 1~2층: 원문 + 정형
+│   ├── enriched.db             ← 3층: 해석/지식
+│   └── schema.md               ← DB 설계 문서
 │
-├── db/                     ← SQLite 데이터베이스
-│   ├── raw.db              ← 1~2층: 원문 + 정형 데이터
-│   └── enriched.db         ← 3층: 해석/지식
-│
-├── scripts/                ← 자동화 스크립트
-│   ├── collect_stocks.py   ← yfinance + DART + KRX
-│   ├── collect_macro.py    ← FRED + ECOS + BLS
-│   ├── collect_events.py   ← News + DART공시 + SEC
-│   ├── collect_energy.py   ← EIA
-│   ├── collect_trade.py    ← 관세청
-│   ├── init_raw_db.py      ← raw.db 초기화
-│   ├── init_enriched_db.py ← enriched.db 초기화
-│   └── setup_keys.py       ← API 키 설정
-│
-├── run.py                  ← 파이프라인 실행기
-│
-└── viz/                    ← 시각화 대시보드
-    ├── index.html          ← 메인 대시보드 (5탭)
-    └── example_workflow.html
+├── output/                     ← 생성된 분석글
+├── status/                     ← 프로젝트 현황판
+├── viz/                        ← 시각화 대시보드
+└── run.py                      ← 파이프라인 실행기
+```
+
+### 문서 관리 원칙
+
+```
+board/requests/  →  docs/  →  agents/, db/
+(인큐베이터)      (확정 전략)  (최종 위치)
 ```
 
 ---
 
 ## 핵심 문서
 
-### Agent (최적화된 최신 전략)
-| 폴더 | 설명 |
+| 위치 | 설명 |
 |---|---|
-| [agents/reinterpret/](agents/reinterpret/) | 2단계 — raw DB + 철학 → enriched DB |
-| [agents/writer/](agents/writer/) | 3단계 — enriched DB → 칼럼형 분석글 |
-
-### 콘텐츠 규격 (원본)
-| 문서 | 설명 |
-|---|---|
-| [투자 철학 프레임](docs/12_investment_philosophy.md) | 22개 해석 프레임워크 |
-| [글쓰기 원칙](docs/13_writing_principles.md) | 12대 원칙 + 4패턴 |
-
-### DB
-| 문서 | 설명 |
-|---|---|
-| [DB 설계](docs/04_database_design.md) | 8테이블 + A~J 데이터 범주 매핑 |
-| [데이터 파이프라인](docs/10_data_pipeline.md) | 크롤링 2종, 스크립트 5종 |
-
-### 운영
-| 문서 | 설명 |
-|---|---|
-| [로드맵](docs/06_roadmap.md) | Phase 0~4 계획 |
-| [매크로 업데이트](docs/05_macro_update_system.md) | 이슈 발생 시 처리 규칙 |
-| [체크리스트](docs/09_checklist.md) | 발행 전 확인 항목 |
-
-전체 문서 목록: [docs/README.md](docs/README.md)
+| [agents/crawler/](agents/crawler/) | 1단계 — 크롤링 스크립트 5종 + API 키 |
+| [agents/reinterpret/](agents/reinterpret/) | 2단계 — 재해석 (철학 22개 프레임) |
+| [agents/writer/](agents/writer/) | 3단계 — 글쓰기 (12원칙 + 4패턴) |
+| [db/schema.md](db/schema.md) | DB 설계 (raw.db + enriched.db) |
+| [docs/](docs/) | 확정 전략 (사업성, 플랫폼, 로드맵 등) |
 
 ---
 

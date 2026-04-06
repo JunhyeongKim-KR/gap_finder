@@ -25,7 +25,7 @@ from pathlib import Path
 # load_env 는 같은 디렉터리
 from load_env import get_key
 
-DB_PATH = Path(__file__).resolve().parent.parent / 'db' / 'raw.db'
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "db" / 'raw.db'
 
 EIA_SERIES = {
     # 원유

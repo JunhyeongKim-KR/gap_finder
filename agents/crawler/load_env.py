@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 
 
-ENV_PATH = Path(__file__).parent.parent / '.env'
+ENV_PATH = Path(__file__).parent.parent.parent / '.env'
 
 
 def load_env():
@@ -38,7 +38,7 @@ def get_key(name):
     if not val:
         print(f"[경고] {name}가 설정되지 않았습니다.")
         print(f"  → .env 파일에 {name}=YOUR_KEY 형태로 추가하거나")
-        print(f"  → python scripts/setup_keys.py 를 실행하세요.")
+        print(f"  → python agents/crawler/setup_keys.py 를 실행하세요.")
         return None
     return val
 

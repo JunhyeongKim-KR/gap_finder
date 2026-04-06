@@ -11,7 +11,7 @@ CEO 3층 구조: 원문/정형/해석 중 1~2층 담당
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent / "db" / "raw.db"
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "db" / "raw.db"
 
 # Layer assignment for summary output
 LAYER_1_TABLES = ["documents"]

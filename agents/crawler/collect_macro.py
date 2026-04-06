@@ -27,7 +27,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from load_env import get_key
 
-DB_PATH = Path(__file__).resolve().parent.parent / "db" / "raw.db"
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "db" / "raw.db"
 
 # ═══════════════════════════════════════════════════════════════════
 # FRED series definitions (27 series)

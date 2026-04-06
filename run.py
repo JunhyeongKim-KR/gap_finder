@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-SCRIPTS_DIR = Path(__file__).parent / 'scripts'
+SCRIPTS_DIR = Path(__file__).parent / 'agents' / 'crawler'
 
 CRAWLERS = {
     'stocks': 'collect_stocks.py',

@@ -22,7 +22,7 @@ from urllib.error import URLError, HTTPError
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from load_env import get_key
 
-DB_PATH = Path(__file__).resolve().parent.parent / "db" / "raw.db"
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "db" / "raw.db"
 
 DEFAULT_NEWS_QUERIES = ["삼성전자", "나이키 Nike", "반도체", "금리 인하"]
 DEFAULT_SEC_TICKERS = ["NKE"]

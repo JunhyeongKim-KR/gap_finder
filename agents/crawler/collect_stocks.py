@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 sys.path.insert(0, str(Path(__file__).parent))
 from load_env import get_key
 
-DB_PATH = Path(__file__).resolve().parent.parent / 'db' / 'raw.db'
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "db" / 'raw.db'
 
 
 def get_db():

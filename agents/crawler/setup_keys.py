@@ -8,7 +8,7 @@ API 키 설정 스크립트.
 
 from pathlib import Path
 
-ENV_PATH = Path(__file__).parent.parent / '.env'
+ENV_PATH = Path(__file__).parent.parent.parent / '.env'
 
 KEYS = [
     ('FRED_API_KEY', 'FRED (미국 거시)', 'https://fred.stlouisfed.org/docs/api/api_key.html'),
