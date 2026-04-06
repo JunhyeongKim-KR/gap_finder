@@ -62,28 +62,33 @@
 6. 철회조건은 '가격'이 아니라 '가설 붕괴 조건'으로 정의
 
 ## 문서 관리 원칙
-- board/requests/ = 인큐베이터 (CEO 요청, 초안)
-- docs/ = 확정된 전략 문서 (아직 최종 자리 없는 것)
-- 자리가 명확해지면 agents/, db/ 등으로 졸업
-- 졸업한 문서는 docs/에서 삭제
+```
+board/requests/ → board/docs/ → agents/, db/
+(인큐베이터)      (확정 전략)    (최종 위치)
+```
 
 ## 시스템 구조
 
-### agents/ (4단계 파이프라인)
-- agents/crawler/ — 1단계 크롤링 (collect_*.py, 토큰X)
-- agents/reinterpret/ — 2단계 재해석 (PROMPT.md + philosophy.md, 토큰O)
-- agents/writer/ — 3단계 글쓰기 (PROMPT.md + writing.md + template.md, 토큰O)
+### 파이프라인 (agents/)
+- agents/run.py — 파이프라인 실행기
+- agents/crawler/ — 1단계 크롤링 (토큰X)
+- agents/reinterpret/ — 2단계 재해석 (토큰O)
+- agents/writer/ — 3단계 글쓰기 (토큰O)
 - 4단계 배포 — 미구현
 
-### db/
-- raw.db — 1~2층 (원문 + 정형 데이터)
+### 저장 (db/)
+- raw.db — 1~2층 (원문 + 정형)
 - enriched.db — 3층 (해석/지식)
-- schema.md — DB 설계 문서
+- schema.md — DB 설계
 
-### docs/ (확정 전략, 졸업 전)
-- 01 사업성, 02 플랫폼, 05 매크로, 06 로드맵, 09 체크리스트, 10 파이프라인
+### 산출 (output/)
+- 분석글 마크다운
+
+### 지원
+- board/requests/ — CEO 요청 (인큐베이터)
+- board/docs/ — 확정 전략
+- viz/ — 시각화 대시보드
 
 글의 기본 문법: [시장 컨센서스] → [해석의 맹점] → [실제 메커니즘] → [진짜 수혜/피해] → [체크포인트]
-- 데이터 파이프라인: docs/10_data_pipeline.md
 - 투자 철학: docs/12_investment_philosophy.md
 - 글쓰기 원칙: docs/13_writing_principles.md

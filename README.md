@@ -84,54 +84,30 @@ raw DB + 철학.md  →  재해석 Agent  →  재해석 DB
 ```
 gap_finder/
 │
-├── agents/                     ← 4단계 파이프라인
-│   ├── crawler/                ← 1단계: 크롤링 스크립트
-│   │   ├── collect_stocks.py   ← yfinance + DART + KRX
-│   │   ├── collect_macro.py    ← FRED + ECOS + BLS
-│   │   ├── collect_events.py   ← News + DART공시 + SEC
-│   │   ├── collect_energy.py   ← EIA
-│   │   ├── collect_trade.py    ← 관세청
-│   │   ├── init_raw_db.py      ← raw.db 초기화
-│   │   ├── init_enriched_db.py ← enriched.db 초기화
-│   │   ├── load_env.py         ← API 키 로드
-│   │   └── setup_keys.py       ← API 키 설정
-│   ├── reinterpret/            ← 2단계: 재해석 Agent
-│   │   ├── PROMPT.md
-│   │   └── philosophy.md       ← 투자 철학 22개
-│   └── writer/                 ← 3단계: 글쓰기 Agent
-│       ├── PROMPT.md
-│       ├── writing.md          ← 글쓰기 12원칙 + 4패턴
-│       └── template.md         ← 글 템플릿 (참조용)
-│
-├── board/                      ← CEO·CTO 소통 (인큐베이터)
-│   ├── requests/               ← CEO 요청 → CTO 검토
-│   ├── decisions/
-│   └── reviews/
-│
-├── docs/                       ← 확정 전략 (졸업 전 보관)
-│   ├── 01 사업성 평가
-│   ├── 02 플랫폼 전략
-│   ├── 05 매크로 업데이트
-│   ├── 06 로드맵
-│   ├── 09 체크리스트
-│   └── 10 데이터 파이프라인
-│
-├── db/                         ← SQLite 데이터베이스
+│  ── 파이프라인 ──
+├── agents/                     ← 처리
+│   ├── run.py                  ← 파이프라인 실행기
+│   ├── crawler/                ← 1단계: 크롤링 (토큰 X)
+│   ├── reinterpret/            ← 2단계: 재해석 (토큰 O)
+│   └── writer/                 ← 3단계: 글쓰기 (토큰 O)
+├── db/                         ← 저장
 │   ├── raw.db                  ← 1~2층: 원문 + 정형
 │   ├── enriched.db             ← 3층: 해석/지식
-│   └── schema.md               ← DB 설계 문서
+│   └── schema.md
+├── output/                     ← 산출 (분석글)
 │
-├── output/                     ← 생성된 분석글
-├── status/                     ← 프로젝트 현황판
-├── viz/                        ← 시각화 대시보드
-└── run.py                      ← 파이프라인 실행기
+│  ── 지원 ──
+├── board/                      ← CEO·CTO 소통 + 전략
+│   ├── requests/               ← 인큐베이터 (CEO 요청)
+│   └── docs/                   ← 확정 전략 (졸업 전)
+└── viz/                        ← 시각화 대시보드
 ```
 
 ### 문서 관리 원칙
 
 ```
-board/requests/  →  docs/  →  agents/, db/
-(인큐베이터)      (확정 전략)  (최종 위치)
+board/requests/  →  board/docs/  →  agents/, db/
+(인큐베이터)       (확정 전략)      (최종 위치)
 ```
 
 ---

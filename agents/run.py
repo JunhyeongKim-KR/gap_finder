@@ -2,12 +2,11 @@
 GapFinder 파이프라인 실행기
 
 사용법:
-    python run.py crawl                     # 전체 크롤링
-    python run.py crawl --source stocks     # 종목만
-    python run.py crawl --source macro      # 거시만
-    python run.py reinterpret               # (미구현) 재해석
-    python run.py write                     # (미구현) 글쓰기
-    python run.py publish                   # (미구현) 배포
+    python agents/run.py crawl                # 전체 크롤링
+    python agents/run.py crawl --source stocks  # 종목만
+    python agents/run.py reinterpret            # (미구현)
+    python agents/run.py write                  # (미구현)
+    python agents/run.py publish                # (미구현)
 """
 
 import argparse
@@ -16,7 +15,7 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-SCRIPTS_DIR = Path(__file__).parent / 'agents' / 'crawler'
+SCRIPTS_DIR = Path(__file__).parent / 'crawler'
 
 CRAWLERS = {
     'stocks': 'collect_stocks.py',
