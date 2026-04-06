@@ -64,15 +64,15 @@
 ## 시스템 구조 (5영역)
 
 ### 파이프라인 (4단계)
-1. **raw DB 크롤링** (토큰X): scripts/collect_*.py → db/gapfinder.db
-2. **DB 구축/재해석** (토큰O): docs/14_agent_reinterpret.md + docs/12
-3. **글쓰기** (토큰O): docs/15_agent_writer.md + docs/13 + docs/07
+1. **raw DB 크롤링** (토큰X): scripts/collect_*.py → db/raw.db
+2. **DB 구축/재해석** (토큰O): agents/reinterpret/ 참조
+3. **글쓰기** (토큰O): agents/writer/ 참조
 4. **배포** (토큰X): 자동화 스크립트 → 티스토리/네이버
 
-### 콘텐츠 규격
-- 투자 철학 22개: docs/12_investment_philosophy.md
-- 글쓰기 원칙 10개: docs/13_writing_principles.md
-- 글 템플릿 9섹션: docs/07_article_template.md
+### Agent
+- 재해석 Agent: agents/reinterpret/ (PROMPT.md + philosophy.md)
+- 글쓰기 Agent: agents/writer/ (PROMPT.md + writing.md)
+- 각 Agent는 자기 폴더 안의 문서만 참조. docs/ 직접 참조 금지.
 
 ### DB
 - DB 설계: docs/04_database_design.md

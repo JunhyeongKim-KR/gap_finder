@@ -89,36 +89,44 @@ gap_finder/
 │   ├── decisions/          ← 확정된 결정사항
 │   └── reviews/            ← 글 리뷰·피드백
 │
-├── docs/                   ← 전략 문서 (사업 설계도)
+├── agents/                 ← AI Agent 전용 프롬프트
+│   ├── reinterpret/        ← 2단계: 재해석 Agent
+│   │   ├── PROMPT.md       ← 역할, 규칙, 입출력
+│   │   └── philosophy.md   ← 투자 철학 22개 프레임
+│   └── writer/             ← 3단계: 글쓰기 Agent
+│       ├── PROMPT.md       ← 역할, 규칙, 입출력
+│       └── writing.md      ← 글쓰기 원칙 12개 + 4패턴
+│
+├── docs/                   ← 전략 문서 (원본 보관)
 │   ├── 01  사업성 평가
 │   ├── 02  플랫폼 전략
 │   ├── 04  DB 설계 (8테이블, A~J 데이터 범주)
 │   ├── 05  매크로 업데이트 체계
 │   ├── 06  로드맵 (Phase 0~4)
-│   ├── 07  글 템플릿 (9섹션)
+│   ├── 07  글 템플릿 (참조용)
 │   ├── 09  체크리스트
-│   ├── 10  데이터 파이프라인 (크롤링 2종)
-│   ├── 12  투자 철학 프레임 (22개)  ← 핵심
-│   └── 13  글쓰기 원칙 (10대 원칙)  ← 핵심
+│   ├── 10  데이터 파이프라인
+│   ├── 12  투자 철학 프레임 (원본)
+│   ├── 13  글쓰기 원칙 (원본)
+│   └── 16  크롤링 스크립트 구조
 │
-├── status/                 ← 프로젝트 현황판
-│   ├── progress.md         ← 전체 진행 상황
-│   ├── coverage.md         ← 종목 커버리지 현황
-│   └── changelog.md        ← 변경 이력
-│
-├── output/                 ← 생성된 종목 분석글
-│   ├── 005930_삼성전자_20260401.md
-│   └── NKE_나이키_20260401_naver.md
+├── output/                 ← 생성된 분석글
 │
 ├── db/                     ← SQLite 데이터베이스
-│   └── gapfinder.db
+│   ├── raw.db              ← 1~2층: 원문 + 정형 데이터
+│   └── enriched.db         ← 3층: 해석/지식
 │
 ├── scripts/                ← 자동화 스크립트
-│   ├── init_db.py          ← DB 초기화 + 삼성전자 샘플
-│   ├── seed_nike.py        ← 나이키 데이터
-│   ├── collect_us.py       ← yfinance 미국주식 수집
-│   ├── collect_news.py     ← Google News RSS
-│   └── collect_macro.py    ← FRED 매크로 지표
+│   ├── collect_stocks.py   ← yfinance + DART + KRX
+│   ├── collect_macro.py    ← FRED + ECOS + BLS
+│   ├── collect_events.py   ← News + DART공시 + SEC
+│   ├── collect_energy.py   ← EIA
+│   ├── collect_trade.py    ← 관세청
+│   ├── init_raw_db.py      ← raw.db 초기화
+│   ├── init_enriched_db.py ← enriched.db 초기화
+│   └── setup_keys.py       ← API 키 설정
+│
+├── run.py                  ← 파이프라인 실행기
 │
 └── viz/                    ← 시각화 대시보드
     ├── index.html          ← 메인 대시보드 (5탭)
@@ -129,18 +137,17 @@ gap_finder/
 
 ## 핵심 문서
 
-### 파이프라인
-| 문서 | 설명 |
+### Agent (최적화된 최신 전략)
+| 폴더 | 설명 |
 |---|---|
-| [재해석 Agent 가이드](docs/14_agent_reinterpret.md) | 2단계 — raw DB → 철학 적용 → 재해석 DB |
-| [글쓰기 Agent 가이드](docs/15_agent_writer.md) | 3단계 — 재해석 DB → 분석글 초안 |
+| [agents/reinterpret/](agents/reinterpret/) | 2단계 — raw DB + 철학 → enriched DB |
+| [agents/writer/](agents/writer/) | 3단계 — enriched DB → 칼럼형 분석글 |
 
-### 콘텐츠 규격
+### 콘텐츠 규격 (원본)
 | 문서 | 설명 |
 |---|---|
 | [투자 철학 프레임](docs/12_investment_philosophy.md) | 22개 해석 프레임워크 |
-| [글쓰기 원칙](docs/13_writing_principles.md) | 10대 글쓰기 원칙 + 스타일 가이드 |
-| [글 템플릿](docs/07_article_template.md) | 9섹션 표준 구조 |
+| [글쓰기 원칙](docs/13_writing_principles.md) | 12대 원칙 + 4패턴 |
 
 ### DB
 | 문서 | 설명 |
