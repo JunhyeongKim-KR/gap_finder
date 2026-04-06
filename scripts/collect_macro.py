@@ -72,29 +72,30 @@ FRED_SERIES = {
 }
 
 # ═══════════════════════════════════════════════════════════════════
-# ECOS series definitions (8 series)
+# ECOS — KeyStatisticList 매핑 (KEYSTAT_NAME → category)
 # ═══════════════════════════════════════════════════════════════════
 
-ECOS_SERIES = {
-    # Interest rates
-    "722Y001/0101000":   {"category": "interest_rate", "unit": "%",      "name": "Base Rate"},
-    "817Y002/010200000": {"category": "interest_rate", "unit": "%",      "name": "KTB 3Y"},
-    "817Y002/010210000": {"category": "interest_rate", "unit": "%",      "name": "KTB 10Y"},
-    # FX
-    "731Y003/0000001":   {"category": "exchange_rate", "unit": "KRW",    "name": "KRW/USD"},
-    "731Y003/0000053":   {"category": "exchange_rate", "unit": "KRW",    "name": "KRW/JPY(100)"},
-    # Inflation
-    "901Y009/0":         {"category": "inflation",     "unit": "index",  "name": "KR CPI"},
-    "901Y010/0":         {"category": "inflation",     "unit": "index",  "name": "KR PPI"},
-    # Liquidity
-    "101Y003/BBFA00":    {"category": "liquidity",     "unit": "bn KRW", "name": "KR M2"},
-}
-
-ECOS_FREQ_MAP = {
-    "interest_rate": "D",
-    "exchange_rate":  "D",
-    "inflation":      "M",
-    "liquidity":      "M",
+ECOS_KEY_MAP = {
+    "한국은행 기준금리":       {"category": "interest_rate", "unit": "%"},
+    "국고채수익률(3년)":       {"category": "interest_rate", "unit": "%"},
+    "국고채수익률(5년)":       {"category": "interest_rate", "unit": "%"},
+    "회사채수익률(3년,AA-)":   {"category": "credit_spread", "unit": "%"},
+    "원/달러 환율(종가)":      {"category": "exchange_rate", "unit": "원"},
+    "원/엔(100엔) 환율(매매기준율)": {"category": "exchange_rate", "unit": "원"},
+    "원/유로 환율(매매기준율)": {"category": "exchange_rate", "unit": "원"},
+    "원/위안 환율(종가)":      {"category": "exchange_rate", "unit": "원"},
+    "코스피지수":              {"category": "gdp", "unit": "index"},
+    "코스닥지수":              {"category": "gdp", "unit": "index"},
+    "M2(광의통화, 평잔)":      {"category": "liquidity", "unit": "십억원"},
+    "외환보유액":              {"category": "liquidity", "unit": "천달러"},
+    "소비자물가지수":          {"category": "inflation", "unit": "index"},
+    "생산자물가지수":          {"category": "inflation", "unit": "index"},
+    "실업률":                  {"category": "employment", "unit": "%"},
+    "고용률":                  {"category": "employment", "unit": "%"},
+    "경제성장률(실질, 계절조정 전기대비)": {"category": "gdp", "unit": "%"},
+    "소비자심리지수":          {"category": "gdp", "unit": "index"},
+    "Dubai유(현물)":           {"category": "commodity", "unit": "달러/배럴"},
+    "금":                      {"category": "commodity", "unit": "달러/트로이온스"},
 }
 
 # ═══════════════════════════════════════════════════════════════════
@@ -213,89 +214,63 @@ def fetch_fred(days=365):
 # ═══════════════════════════════════════════════════════════════════
 
 def fetch_ecos(days=365):
-    """Fetch all ECOS (Bank of Korea) series and write to macro_indicators (country='KR', source='ECOS')."""
+    """Fetch Korean key statistics via ECOS KeyStatisticList API."""
     key = get_key("ECOS_API_KEY")
     if not key:
         print("[ECOS] Skipping — ECOS_API_KEY not set")
         return 0
 
-    end_dt = datetime.now()
-    start_dt = end_dt - timedelta(days=days)
-    end_date = end_dt.strftime("%Y%m%d")
-    start_date = start_dt.strftime("%Y%m%d")
-    collected_at = end_dt.strftime("%Y-%m-%d %H:%M:%S")
+    collected_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    today_str = datetime.now().strftime("%Y-%m-%d")
 
     print(f"\n{'='*50}")
-    print(f"[ECOS] {len(ECOS_SERIES)} series, {start_date}~{end_date}")
+    print(f"[ECOS] KeyStatisticList — {len(ECOS_KEY_MAP)} indicators")
     print(f"{'='*50}")
 
-    base_url = "https://ecos.bok.or.kr/api/StatisticSearch"
+    url = f"https://ecos.bok.or.kr/api/KeyStatisticList/{key}/json/kr/1/100"
+    try:
+        req = urllib.request.Request(url)
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except (urllib.error.URLError, urllib.error.HTTPError, OSError) as e:
+        print(f"[ECOS] ERROR: {e}")
+        return 0
+
+    if "KeyStatisticList" not in data:
+        err = data.get("RESULT", {}).get("MESSAGE", "?")
+        print(f"[ECOS] API error: {err}")
+        return 0
+
+    api_rows = data["KeyStatisticList"].get("row", [])
     conn = _get_conn()
-    total = 0
-    ok = 0
+    rows = []
 
-    for i, (series_key, meta) in enumerate(ECOS_SERIES.items(), 1):
-        stat_code, item_code = series_key.split("/")
-        freq = ECOS_FREQ_MAP.get(meta["category"], "M")
-        indicator_id = f"ECOS:{stat_code}:{item_code}"
-
-        url = (
-            f"{base_url}/{key}/json/kr/1/1000"
-            f"/{stat_code}/{freq}/{start_date}/{end_date}/{item_code}"
-        )
-
+    for r in api_rows:
+        name = r.get("KEYSTAT_NAME", "")
+        if name not in ECOS_KEY_MAP:
+            continue
+        meta = ECOS_KEY_MAP[name]
+        val_str = r.get("DATA_VALUE", "")
         try:
-            req = urllib.request.Request(url)
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-        except (urllib.error.URLError, urllib.error.HTTPError, OSError) as e:
-            print(f"  [{i}/{len(ECOS_SERIES)}] {meta['name']:20s} — ERROR: {e}")
-            time.sleep(0.5)
+            val = float(val_str)
+        except (ValueError, TypeError):
             continue
+        rows.append({
+            "indicator_id": f"ECOS:{name}",
+            "date": today_str,
+            "value": val,
+            "unit": meta.get("unit", r.get("UNIT_NAME", "")),
+            "country": "KR",
+            "category": meta["category"],
+            "source": "ECOS",
+            "collected_at": collected_at,
+        })
+        print(f"  {name:30s} = {val}")
 
-        if "StatisticSearch" not in data:
-            err = data.get("RESULT", {})
-            print(f"  [{i}/{len(ECOS_SERIES)}] {meta['name']:20s} — API error: {err.get('MESSAGE', '?')}")
-            time.sleep(0.5)
-            continue
-
-        rows_raw = data["StatisticSearch"].get("row", [])
-        rows = []
-        for r in rows_raw:
-            raw_time = r.get("TIME", "")
-            val_str = r.get("DATA_VALUE", "")
-            # Normalize date: YYYYMMDD → YYYY-MM-DD, YYYYMM → YYYY-MM-01
-            if len(raw_time) == 8:
-                date_str = f"{raw_time[:4]}-{raw_time[4:6]}-{raw_time[6:8]}"
-            elif len(raw_time) == 6:
-                date_str = f"{raw_time[:4]}-{raw_time[4:6]}-01"
-            elif len(raw_time) == 4:
-                date_str = f"{raw_time}-01-01"
-            else:
-                date_str = raw_time
-            try:
-                rows.append({
-                    "indicator_id": indicator_id,
-                    "date": date_str,
-                    "value": float(val_str),
-                    "unit": meta["unit"],
-                    "country": "KR",
-                    "category": meta["category"],
-                    "source": "ECOS",
-                    "collected_at": collected_at,
-                })
-            except (ValueError, TypeError):
-                continue
-
-        saved = _save_rows(conn, rows)
-        total += saved
-        if saved:
-            ok += 1
-        print(f"  [{i}/{len(ECOS_SERIES)}] {meta['name']:20s} — {saved:>4d} rows")
-        time.sleep(0.5)
-
+    saved = _save_rows(conn, rows)
     conn.close()
-    print(f"[ECOS] Done: {ok}/{len(ECOS_SERIES)} series, {total} rows")
+    print(f"[ECOS] Done: {saved}/{len(ECOS_KEY_MAP)} indicators saved")
+    return saved
     return total
 
 

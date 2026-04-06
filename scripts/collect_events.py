@@ -410,6 +410,15 @@ def _classify_sec_event(form_type: str) -> str:
     return "filing"
 
 
+def _ensure_str(val, default=''):
+    """SEC EDGAR API may return list instead of str; normalise to str."""
+    if val is None:
+        return default
+    if isinstance(val, list):
+        return str(val[0]) if val else default
+    return str(val)
+
+
 def fetch_sec_filings(tickers=None, days=30) -> dict:
     """SEC EDGAR 공시 수집 -> documents + events."""
     tickers = tickers or DEFAULT_SEC_TICKERS
@@ -466,20 +475,31 @@ def fetch_sec_filings(tickers=None, days=30) -> dict:
         for hit in hits:
             try:
                 src = hit.get("_source", hit)
-                accession = src.get("file_num", src.get("accession_no", ""))
+                accession = _ensure_str(
+                    src.get("file_num", src.get("accession_no", ""))
+                )
                 # Clean accession number for ID
                 acc_clean = accession.replace("-", "").replace(" ", "")
                 if not acc_clean:
-                    acc_clean = _short_hash(json.dumps(src))
+                    acc_clean = _short_hash(json.dumps(src, default=str))
 
-                form_type = src.get("form_type", src.get("file_type", ""))
-                filing_date = src.get("file_date", src.get("period_of_report", ""))
-                company = src.get("display_names", [ticker])[0] if src.get("display_names") else ticker
+                form_type = _ensure_str(
+                    src.get("form_type", src.get("file_type", ""))
+                )
+                filing_date = _ensure_str(
+                    src.get("file_date", src.get("period_of_report", ""))
+                )
+                company = _ensure_str(
+                    src.get("display_names", ticker), ticker
+                )
+                entity_name = _ensure_str(src.get("entity_name", company))
+                company = entity_name if entity_name else company
                 title = f"[{company}] {form_type}"
 
+                file_num = _ensure_str(src.get("file_num", ""))
                 filing_url = ""
-                if src.get("file_num"):
-                    filing_url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&filenum={src['file_num']}"
+                if file_num:
+                    filing_url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&filenum={file_num}"
 
                 doc_id = f"sec_{acc_clean}"
                 event_id = f"evt_{doc_id}"
