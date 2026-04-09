@@ -14,10 +14,10 @@ TICKER_종목명_YYYYMMDD_리포트.md   ← 리포트 스타일 (비교용)
 
 | 파일 | 종목/주제 | 데이터 소스 | 논점 프레임 | 작성일 |
 |---|---|---|---|---|
-| [NASDAQ_트럼프관세전쟁_20260406.md](NASDAQ_트럼프관세전쟁_20260406.md) | 나스닥/관세 | enriched.db only | CEO 피드백 전 | 2026-04-06 |
-| [NASDAQ_관세전쟁2라운드_20260409.md](NASDAQ_관세전쟁2라운드_20260409.md) | 나스닥/관세 | enriched.db + 웹서치 | CEO 피드백 전 | 2026-04-09 |
-| [NASDAQ_관세보다할인율_db_20260409.md](NASDAQ_관세보다할인율_db_20260409.md) | 나스닥/관세 | enriched.db only | CEO 피드백 후 | 2026-04-09 |
-| [NASDAQ_관세보다할인율_20260409.md](NASDAQ_관세보다할인율_20260409.md) | 나스닥/관세 | enriched.db + 웹서치 | CEO 피드백 후 | 2026-04-09 |
+| ① [db · 피드백전](NASDAQ_%EA%B4%80%EC%84%B8_%E2%91%A0_db_%ED%94%BC%EB%93%9C%EB%B0%B1%EC%A0%84_20260406.md) | 나스닥/관세 | enriched.db only | CEO 피드백 전 | 2026-04-06 |
+| ② [db+web · 피드백전](NASDAQ_%EA%B4%80%EC%84%B8_%E2%91%A1_db%2Bweb_%ED%94%BC%EB%93%9C%EB%B0%B1%EC%A0%84_20260409.md) | 나스닥/관세 | enriched.db + 웹서치 | CEO 피드백 전 | 2026-04-09 |
+| ③ [db · 피드백후](NASDAQ_%EA%B4%80%EC%84%B8_%E2%91%A2_db_%ED%94%BC%EB%93%9C%EB%B0%B1%ED%9B%84_20260409.md) | 나스닥/관세 | enriched.db only | CEO 피드백 후 | 2026-04-09 |
+| ④ [db+web · 피드백후](NASDAQ_%EA%B4%80%EC%84%B8_%E2%91%A3_db%2Bweb_%ED%94%BC%EB%93%9C%EB%B0%B1%ED%9B%84_20260409.md) | 나스닥/관세 | enriched.db + 웹서치 | CEO 피드백 후 | 2026-04-09 |
 
 ## 나스닥 관세 칼럼 2×2 실험
 
