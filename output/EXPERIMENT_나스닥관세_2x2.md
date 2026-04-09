@@ -2,6 +2,16 @@
 
 같은 주제(나스닥×관세)에 대해 **데이터 소스**(DB only vs DB+웹서치)와 **논점 프레임**(CEO 피드백 전/후)을 교차해 4가지 버전을 생성했다.
 
+## 공통 적용 원칙
+
+4개 글 모두 동일한 글쓰기 원칙과 투자 철학 프레임을 기반으로 작성되었다.
+
+- **칼럼니스트형 주장문** — 리포트가 아니라 주장문으로 쓴다
+- 핵심 2~4개 포인트만, 나머지는 과감히 삭제
+- 결론은 문장으로 명확하게
+- 글쓰기 원칙 상세: [agents/writer/writing.md](../agents/writer/writing.md)
+- 투자 철학 프레임: [agents/reinterpret/philosophy.md](../agents/reinterpret/philosophy.md)
+
 ## 2×2 매트릭스
 
 | | **CEO 피드백 전** | **CEO 피드백 후** |
