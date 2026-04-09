@@ -32,7 +32,7 @@ TICKER_종목명_YYYYMMDD_리포트.md   ← 리포트 스타일 (비교용)
 
 ### CEO 피드백이 바꾼 것 (① vs ③, ② vs ④)
 
-> 피드백 원문: [board/requests/20260409_나스닥칼럼_CEO피드백_금리경로누락.md](../board/requests/20260409_나스닥칼럼_CEO피드백_금리경로누락.md)
+> 피드백 원문: [board/requests/20260409_나스닥칼럼_CEO피드백_금리경로누락.md](../board/requests/20260409_%EB%82%98%EC%8A%A4%EB%8B%A5%EC%B9%BC%EB%9F%BC_CEO%ED%94%BC%EB%93%9C%EB%B0%B1_%EA%B8%88%EB%A6%AC%EA%B2%BD%EB%A1%9C%EB%88%84%EB%9D%BD.md)
 
 CEO 핵심 지적: **"주장 부족이 아니라 주장 포인트가 낡았다."**
 
