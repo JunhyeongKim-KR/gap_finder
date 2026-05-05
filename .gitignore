@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Runtime data
+data/evidence/
+data/operations.db
+data/traces/
+*.log
+logs/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

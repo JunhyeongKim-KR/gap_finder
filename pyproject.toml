@@ -1,0 +1,30 @@
+[project]
+name = "gap-finder"
+version = "2.0.0"
+description = "역발상 투자 리서치 콘텐츠 시스템 — 5단계 자동화 파이프라인"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.40.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+data = [
+    "yfinance>=0.2.40",
+    "FinanceDataReader>=0.9.90",
+    "pandas>=2.2.0",
+]
+dev = [
+    "ruff>=0.6.0",
+    "pytest>=8.0.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]
