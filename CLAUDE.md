@@ -1,59 +1,52 @@
-# GapFinder — Claude 가이드
+# GapFinder — Claude 가이드 (v2)
+
+## 현재 상태
+
+**처음부터 다시 짓는 중.** 2026-05-05 기준, 기존 구현은 `v0.1/` 아래로 격리됐고 새 시스템은 `board/`만 남은 빈 repo에서 시작.
+
+핵심 방향성 문서:
+- `board/requests/20260505_블로그운영시스템_보고서.md` — CEO 최신 방향성 (5단계 자동화)
+- `board/docs/20260505_CTO_액션플랜_v2.md` — CTO 응답·실행 계획
 
 ## 이 프로젝트는
-역발상 투자 리서치 콘텐츠 시스템. 종목 DB에서 데이터를 읽고, 분석 글을 생성하고, 매크로 이슈 발생 시 관련 종목을 업데이트하는 반자동 체계.
+
+역발상 투자 리서치 콘텐츠 시스템. 시장 통념을 한 단계 더 의심하는 분석 블로그를 5단계 자동화 파이프라인으로 운영. CEO는 1편당 5~10분만 투입(글감·분석관점·후킹강도 3가지 픽).
 
 ## 팀 역할
+
 - **CEO**: 기획·판단·콘텐츠 방향. 코드를 모름. 자연어로만 소통.
-- **CTO**: 개발·자동화·DB·코드. 시스템 설계와 구현.
-- **Claude**: CEO/CTO 요청에 따라 글 초안 생성, DB 조회, 문서 작성, 요청서 정리.
+- **CTO**: 개발·자동화·시스템. 설계와 구현.
+- **Claude**: CEO/CTO 요청에 따라 글 초안 생성, 문서 작성, 요청서·결정서 정리.
 
-## CEO가 요청할 때 행동 규칙
+## 결정 권한 분리 (핵심 원칙)
 
-### 요청사항 남기기
-- CEO가 "요청사항 남겨줘", "이거 해달라고 전해줘" 등을 말하면
-- `board/requests/YYYYMMDD_제목.md` 파일을 생성
-- 형식:
+- **CEO 결정**: 어떤 글, 어떤 thesis, 어떤 톤
+- **CTO·시스템 결정**: 어떤 도구, 어떤 코드, 후보 몇 개, 어떤 데이터 source
+- 시스템 결정 사항은 CEO에게 묻지 않음
+
+## board/ 워크플로우
+
+### 요청사항 (`board/requests/YYYYMMDD_제목.md`)
+CEO가 "요청사항 남겨줘" 등을 말하면 생성:
 ```markdown
 ---
 요청자: CEO
 날짜: YYYY-MM-DD
 상태: 대기
 ---
-# 요청 제목
+# 제목
 ## 내용
-(요청 내용)
 ## 기대 결과
-(어떤 결과물이 나와야 하는지)
 ```
 
-### 결정사항 기록
-- "결정했어", "이렇게 하자", "확정" 등의 표현 시
-- `board/decisions/YYYYMMDD_제목.md` 파일을 생성
+### 결정사항 (`board/decisions/YYYYMMDD_제목.md`)
+"결정했어", "이렇게 하자", "확정" 등의 표현 시 생성.
 
-### 리뷰/피드백 기록
-- output/ 글에 대한 피드백 시
-- `board/reviews/YYYYMMDD_종목명_리뷰.md` 파일을 생성
-
-### 종목 분석 글 생성
-- docs/07_article_template.md 의 표준 템플릿을 따를 것
-- db/gapfinder.db 에서 해당 종목 데이터를 먼저 조회
-- output/TICKER_종목명_YYYYMMDD.md 로 저장
-- docs/08_risk_control.md 의 작성 원칙을 반드시 준수
-
-### 진행 상황 질문
-- "진행 상황", "어디까지 왔어", "현황" 등 질문 시
-- status/progress.md 를 읽어서 요약
-- status/coverage.md 로 종목 현황 안내
-
-## 파일 네이밍 규칙
-- 요청: `board/requests/YYYYMMDD_제목.md`
-- 결정: `board/decisions/YYYYMMDD_제목.md`
-- 리뷰: `board/reviews/YYYYMMDD_종목명_리뷰.md`
-- 분석글: `output/TICKER_종목명_YYYYMMDD.md`
-- 진행상황 업데이트 시 status/ 파일도 함께 갱신
+### 리뷰 (`board/reviews/YYYYMMDD_종목명_리뷰.md`)
+output/ 글 또는 시스템 결과물에 대한 피드백 시 생성.
 
 ## 작성 원칙 (반드시 준수)
+
 1. 확인되지 않은 수치는 절대 단정하지 말 것
 2. 공식 자료 확인 시에만 숫자 제시
 3. 불확실하면 "확인되지 않으나…", "가설적 추론 전제" 표현 사용
@@ -61,34 +54,14 @@
 5. 목표주가는 시나리오와 가정에 따라 제시
 6. 철회조건은 '가격'이 아니라 '가설 붕괴 조건'으로 정의
 
-## 문서 관리 원칙
-```
-board/requests/ → board/docs/ → agents/, db/
-(인큐베이터)      (확정 전략)    (최종 위치)
-```
+## v0.1/ 안내
 
-## 시스템 구조
+이전 구현(3-agent: crawler/reinterpret/writer 구조). **참조용으로만 보관**, 새 시스템은 v0.1/에 의존하지 않고 처음부터 재구축. 단, `v0.1/agents/crawler/`의 데이터 수집 스크립트는 새 3단계(evidence) 설계 시 reference로 활용 가능.
 
-### 파이프라인 (agents/)
-- agents/run.py — 파이프라인 실행기
-- agents/crawler/ — 1단계 크롤링 (토큰X)
-- agents/reinterpret/ — 2단계 재해석 (토큰O)
-- agents/writer/ — 3단계 글쓰기 (토큰O)
-- 4단계 배포 — 미구현
+## 폴더 구조
 
-### 저장 (db/)
-- raw.db — 1~2층 (원문 + 정형)
-- enriched.db — 3층 (해석/지식)
-- schema.md — DB 설계
+새 폴더 구조는 진행 중 결정. 현재 확정된 것은 `board/`(협업 기록)와 `v0.1/`(legacy)뿐. 5단계 파이프라인을 어떻게 폴더로 나눌지는 CEO/CTO 협의 후 확정.
 
-### 산출 (output/)
-- 분석글 마크다운
+## 글의 기본 문법
 
-### 지원
-- board/requests/ — CEO 요청 (인큐베이터)
-- board/docs/ — 확정 전략
-- viz/ — 시각화 대시보드
-
-글의 기본 문법: [시장 컨센서스] → [해석의 맹점] → [실제 메커니즘] → [진짜 수혜/피해] → [체크포인트]
-- 투자 철학: docs/12_investment_philosophy.md
-- 글쓰기 원칙: docs/13_writing_principles.md
+`[시장 컨센서스] → [해석의 맹점] → [실제 메커니즘] → [진짜 수혜/피해] → [체크포인트]`
